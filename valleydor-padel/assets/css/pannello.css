@@ -381,3 +381,6 @@
   .vd-subrow { grid-template-columns: 22px 1fr 1fr; }
   .vd-subrow .vd-row__del { grid-column: 3; justify-self: end; }
 }
+
+/* nome del corso su tutta la riga: i titoli lunghi non vanno tagliati */
+.vd-row--corso > .vd-row__fields > .vd-f--nome { grid-column: 1 / -1; max-width: 560px; }

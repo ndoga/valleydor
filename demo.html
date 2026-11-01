@@ -59,6 +59,32 @@
       background: var(--ink-2); color: var(--muted-dark);
     }
     .demo__note strong { color: var(--white); }
+
+    .shots { margin-top: 90px; }
+    .shots h2 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; margin-bottom: .6rem; }
+    .shots h2 em { color: var(--lime); }
+    .shots > p { max-width: 640px; color: var(--muted-dark); margin: 0 0 40px; }
+    .shots h3 {
+      margin: 50px 0 20px;
+      font-size: 1rem;
+      letter-spacing: .14em;
+      color: var(--lime);
+    }
+    .shots__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); gap: 28px; }
+    .shot { margin: 0; }
+    .shot--wide { grid-column: 1 / -1; }
+    .shot a {
+      display: block;
+      overflow: hidden;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--ink-2);
+      transition: transform .4s var(--ease), border-color .3s;
+    }
+    .shot a:hover { transform: translateY(-4px); border-color: rgba(179, 218, 45, .5); }
+    .shot img { width: 100%; height: auto; }
+    .shot figcaption { margin-top: 12px; color: rgba(255, 255, 255, .85); font-size: .98rem; }
+    .shot figcaption b { color: var(--white); }
   </style>
 </head>
 <body>
@@ -100,7 +126,65 @@
         </section>
       </div>
 
-      <p class="demo__note"><strong>Come funziona la prova:</strong> l'area riservata gira direttamente nel browser (WordPress Playground). Il primo caricamento richiede circa mezzo minuto. Le modifiche restano solo sul tuo dispositivo, non toccano il sito vero e spariscono quando chiudi la pagina. Le password del sito vero saranno ovviamente diverse.</p>
+      <p class="demo__note"><strong>Come funziona la prova:</strong> l'area riservata gira direttamente nel browser (WordPress Playground). Il primo caricamento richiede circa mezzo minuto. Le modifiche restano solo sul tuo dispositivo, non toccano il sito vero e spariscono quando chiudi la pagina. Le password del sito vero saranno ovviamente diverse. Se su qualche browser non si apre, prova dal telefono oppure guarda le schermate qui sotto.</p>
+
+      <section class="shots" id="schermate">
+        <p class="eyebrow" style="color: var(--lime)">Schermate</p>
+        <h2>L'area riservata, <em>in breve</em>.</h2>
+        <p>Come appare la gestione del sito e cosa cambia sul sito. Tocca un'immagine per vederla a grandezza piena.</p>
+
+        <h3>Gestione</h3>
+        <div class="shots__grid">
+          <figure class="shot">
+            <a href="img/demo/accesso.jpg" target="_blank" rel="noopener"><img src="img/demo/accesso.jpg" alt="Pagina di accesso all'area riservata" loading="lazy" width="1280" height="620"></a>
+            <figcaption><b>Accesso.</b> Il titolare entra con il suo utente dal link "Area riservata" in fondo al sito.</figcaption>
+          </figure>
+          <figure class="shot">
+            <a href="img/demo/pannello.jpg" target="_blank" rel="noopener"><img src="img/demo/pannello.jpg" alt="Pannello di gestione con le tariffe del campo" loading="lazy" width="1280" height="930"></a>
+            <figcaption><b>Pannello e tariffe.</b> Una pagina sola: prezzo del campo, offerta (in rosso), voce in evidenza (bordo verde) e prezzo a persona calcolato da solo.</figcaption>
+          </figure>
+          <figure class="shot">
+            <a href="img/demo/extra.jpg" target="_blank" rel="noopener"><img src="img/demo/extra.jpg" alt="Tabella degli extra" loading="lazy" width="1100" height="756"></a>
+            <figcaption><b>Extra.</b> Si aggiungono, si tolgono e si riordinano trascinandoli. Con "Visibile" spento (in grigio) non compaiono sul sito ma restano salvati.</figcaption>
+          </figure>
+          <figure class="shot">
+            <a href="img/demo/corsi.jpg" target="_blank" rel="noopener"><img src="img/demo/corsi.jpg" alt="Tabella dei corsi con i prezzi" loading="lazy" width="1100" height="622"></a>
+            <figcaption><b>Corsi.</b> Ogni corso ha descrizione e prezzi propri: per chi, prezzo, testo dopo il prezzo ed eventuale offerta.</figcaption>
+          </figure>
+          <figure class="shot">
+            <a href="img/demo/corso-nuovo.jpg" target="_blank" rel="noopener"><img src="img/demo/corso-nuovo.jpg" alt="Nuovo corso in evidenza con prezzo in offerta" loading="lazy" width="1100" height="352"></a>
+            <figcaption><b>Un corso nuovo</b> creato con "Aggiungi un corso", in evidenza con l'etichetta "Novità" e il prezzo in offerta.</figcaption>
+          </figure>
+          <figure class="shot">
+            <a href="img/demo/galleria.jpg" target="_blank" rel="noopener"><img src="img/demo/galleria.jpg" alt="Galleria fotografica nel pannello" loading="lazy" width="1100" height="433"></a>
+            <figcaption><b>Galleria e sponsor.</b> Foto scelte dalla libreria, si riordinano trascinandole o si tolgono con la ×.</figcaption>
+          </figure>
+          <figure class="shot">
+            <a href="img/demo/tornei-elenco.jpg" target="_blank" rel="noopener"><img src="img/demo/tornei-elenco.jpg" alt="Elenco dei tornei" loading="lazy" width="1280" height="520"></a>
+            <figcaption><b>Tornei.</b> L'elenco con la data di ogni torneo; quelli già passati sono segnati come conclusi.</figcaption>
+          </figure>
+          <figure class="shot">
+            <a href="img/demo/torneo-nuovo.jpg" target="_blank" rel="noopener"><img src="img/demo/torneo-nuovo.jpg" alt="Inserimento di un nuovo torneo" loading="lazy" width="1280" height="760"></a>
+            <figcaption><b>Nuovo torneo.</b> Titolo e descrizione a sinistra, data, orario, categoria, quota e link di iscrizione a destra.</figcaption>
+          </figure>
+        </div>
+
+        <h3>Il risultato sul sito</h3>
+        <div class="shots__grid">
+          <figure class="shot shot--wide">
+            <a href="img/demo/sito-prezzi.jpg" target="_blank" rel="noopener"><img src="img/demo/sito-prezzi.jpg" alt="Sezione prezzi del sito con offerta e voce in evidenza" loading="lazy" width="1280" height="760"></a>
+            <figcaption><b>Prezzi.</b> L'ora in offerta con il prezzo vecchio barrato, l'ora e mezza "Più scelto", la racchetta in offerta e l'acqua "Novità". L'overgrip, nascosto dal pannello, non compare.</figcaption>
+          </figure>
+          <figure class="shot">
+            <a href="img/demo/sito-corsi.jpg" target="_blank" rel="noopener"><img src="img/demo/sito-corsi.jpg" alt="Sezione corsi del sito" loading="lazy" width="1280" height="930"></a>
+            <figcaption><b>Corsi.</b> Il corso in evidenza si apre da solo, con descrizione e prezzo in offerta.</figcaption>
+          </figure>
+          <figure class="shot">
+            <a href="img/demo/sito-tornei.jpg" target="_blank" rel="noopener"><img src="img/demo/sito-tornei.jpg" alt="Sezione tornei del sito" loading="lazy" width="1280" height="520"></a>
+            <figcaption><b>Tornei.</b> I prossimi tre tornei compaiono da soli in home, con il pulsante per iscriversi.</figcaption>
+          </figure>
+        </div>
+      </section>
     </div>
   </main>
 </body>

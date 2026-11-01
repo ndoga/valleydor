@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'VD_VERSION', '1.2.0' );
+define( 'VD_VERSION', '1.2.1' );
 
 require get_template_directory() . '/inc/listini.php';
 require get_template_directory() . '/inc/tornei.php';
