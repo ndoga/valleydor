@@ -10,6 +10,20 @@ due campi panoramici a 100 metri dal mare.
 | `valleydor-padel/` | **Tema WordPress** da installare sul sito |
 | `index.html`, `css/`, `js/`, `img/` | Anteprima statica senza WordPress (pubblicata su GitHub Pages): solo grafica, senza area riservata |
 
+## Anteprima per il proprietario
+
+**https://ndoga.github.io/valleydor/demo.html** – pagina da mandare al proprietario, con due link:
+
+- il sito (anteprima statica su GitHub Pages);
+- l'area riservata di prova su [WordPress Playground](https://playground.wordpress.net/), che gira nel
+  browser: installa il tema dal ramo `main` di questo repository, crea l'utente `gestore` (password
+  `demo`, esiste solo nella demo), carica le foto e alcuni tornei di esempio, e si apre sul pannello.
+  Le modifiche restano nel browser di chi prova e spariscono chiudendo la pagina.
+
+La ricetta è `demo/blueprint.json`, generata da `demo/genera-blueprint.py` a partire da
+`demo/prepara-demo.php`: per cambiarla modificare il PHP e rigenerare. Ogni push su `main` aggiorna
+anche la demo, perché Playground scarica il tema dal repository a ogni apertura.
+
 ## Installare il tema
 
 1. Creare lo zip della cartella `valleydor-padel` (la cartella stessa deve stare dentro lo zip).

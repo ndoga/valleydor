@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Valley d'Or – anteprima del nuovo sito</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0b1214">
+  <link rel="icon" href="img/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,500;0,700;0,800;1,800&family=Mulish:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { background: var(--ink); color: var(--white); }
+    .demo { padding: 60px 0 90px; }
+    .demo__logo { height: 56px; width: auto; margin-bottom: 50px; }
+    .demo h1 { font-size: clamp(2.6rem, 7vw, 5rem); font-weight: 800; margin-bottom: 1rem; }
+    .demo h1 em { color: var(--lime); }
+    .demo__lead { max-width: 640px; font-size: 1.15rem; color: var(--muted-dark); margin: 0 0 50px; }
+    .demo__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+    .demo__card {
+      display: flex; flex-direction: column;
+      padding: 34px 32px;
+      border-radius: var(--radius);
+      background: var(--ink-2);
+      border: 1px solid var(--line);
+    }
+    .demo__card--hot { border-color: rgba(179, 218, 45, .5); background: linear-gradient(160deg, #1d2c10 0%, var(--ink-2) 60%); }
+    .demo__num {
+      display: grid; place-items: center;
+      width: 46px; height: 46px; margin-bottom: 20px;
+      border-radius: 14px;
+      background: var(--lime); color: var(--ink);
+      font: 800 1.4rem/1 var(--font-head);
+    }
+    .demo__card h2 { font-size: 1.7rem; margin-bottom: .6rem; }
+    .demo__card p { color: var(--muted-dark); margin: 0 0 1.4rem; }
+    .demo__card .btn { align-self: flex-start; margin-top: auto; }
+    .demo__cred {
+      display: flex; flex-wrap: wrap; gap: 10px 28px;
+      margin: 0 0 1.4rem; padding: 14px 18px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .06);
+      font-size: .95rem;
+    }
+    .demo__cred b { color: var(--lime); font-family: var(--font-head); letter-spacing: .04em; }
+    .demo__try { margin: 0 0 1.6rem; padding: 0; list-style: none; display: grid; gap: 8px; }
+    .demo__try li { position: relative; padding-left: 1.6em; color: rgba(255, 255, 255, .88); }
+    .demo__try li::before {
+      content: ""; position: absolute; left: 0; top: .55em;
+      width: 11px; height: 6px;
+      border-left: 2.5px solid var(--lime); border-bottom: 2.5px solid var(--lime);
+      transform: rotate(-45deg);
+    }
+    .demo__note {
+      margin-top: 40px; padding: 20px 24px;
+      border-left: 4px solid var(--lime); border-radius: 12px;
+      background: var(--ink-2); color: var(--muted-dark);
+    }
+    .demo__note strong { color: var(--white); }
+  </style>
+</head>
+<body>
+  <main class="demo">
+    <div class="wrap">
+      <img src="img/logo.png" alt="Valley d'Or Padel" class="demo__logo">
+      <p class="eyebrow" style="color: var(--lime)">Anteprima</p>
+      <h1>Il nuovo sito <em>Valley d'Or</em></h1>
+      <p class="demo__lead">Qui puoi vedere il sito come lo vedranno i clienti e provare l'area riservata da cui gestire prezzi, extra, corsi, tornei e foto, senza toccare il sito vero.</p>
+
+      <div class="demo__grid">
+        <section class="demo__card">
+          <span class="demo__num">1</span>
+          <h2>Il sito</h2>
+          <p>La pagina che vedono i clienti, da computer e da telefono: prezzi, corsi, tornei, galleria e prenotazione su Playtomic.</p>
+          <a href="index.html" class="btn btn--ghost">Guarda il sito</a>
+        </section>
+
+        <section class="demo__card demo__card--hot">
+          <span class="demo__num">2</span>
+          <h2>L'area riservata</h2>
+          <p>Un WordPress di prova con il nuovo tema, già pronto con l'utente del titolare. Si apre direttamente sul pannello di gestione.</p>
+          <div class="demo__cred">
+            <span>Utente <b>gestore</b></span>
+            <span>Password <b>demo</b></span>
+          </div>
+          <ul class="demo__try">
+            <li>Cambia un prezzo e mettilo in offerta</li>
+            <li>Aggiungi un extra e mettilo in evidenza</li>
+            <li>Crea un corso nuovo con i suoi prezzi</li>
+            <li>Aggiungi un torneo dal menu Tornei</li>
+            <li>Cambia o riordina le foto della galleria</li>
+            <li>Premi "Vedi il sito" per vedere il risultato</li>
+          </ul>
+          <a href="https://playground.wordpress.net/?blueprint-url=https://ndoga.github.io/valleydor/demo/blueprint.json" class="btn btn--lime" target="_blank" rel="noopener">
+            Apri l'area riservata
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </section>
+      </div>
+
+      <p class="demo__note"><strong>Come funziona la prova:</strong> l'area riservata gira direttamente nel browser (WordPress Playground). Il primo caricamento richiede circa mezzo minuto. Le modifiche restano solo sul tuo dispositivo, non toccano il sito vero e spariscono quando chiudi la pagina. Le password del sito vero saranno ovviamente diverse.</p>
+    </div>
+  </main>
+</body>
+</html>
