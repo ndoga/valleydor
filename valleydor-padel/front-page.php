@@ -9,19 +9,40 @@ $playtomic = vd( 'playtomic' );
 $whatsapp  = 'https://wa.me/' . preg_replace( '/\D/', '', vd( 'whatsapp' ) );
 $freccia   = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 
-// Galleria: le foto vuote (rimosse da Personalizza) vengono saltate.
-$galleria = array();
-for ( $i = 1; $i <= 9; $i++ ) {
-	if ( vd( 'galleria_' . $i ) ) {
-		$galleria[] = vd( 'galleria_' . $i );
+// Galleria e sponsor: foto scelte nel pannello, o quelle predefinite del tema.
+$galleria = vd_foto( 'galleria' );
+$sponsor  = vd_foto( 'sponsor' );
+$formati  = array( 'gallery__item--wide', 'gallery__item--tall', '', '', '', '', '', '', 'gallery__item--wide' );
+$in_home  = 9; // foto visibili nella griglia; le altre si aprono con "Vedi tutte"
+
+$tornei = vd_tornei_prossimi( 3 );
+
+// Tariffe, extra e corsi dal pannello: solo le voci visibili.
+$tariffe = vd_visibili( vd_tariffe() );
+$extra   = vd_visibili( vd_extra() );
+$corsi   = vd_visibili( vd_corsi() );
+
+// Si apre il primo corso in evidenza, altrimenti il primo.
+$corso_aperto = 0;
+foreach ( $corsi as $i => $c ) {
+	if ( ! empty( $c['evidenza'] ) ) {
+		$corso_aperto = $i;
+		break;
 	}
 }
-$formati = array( 'gallery__item--wide', 'gallery__item--tall', '', '', '', '', '', '', 'gallery__item--wide' );
+$corsi_con_prezzi = false;
+foreach ( $corsi as $c ) {
+	foreach ( $c['righe'] as $r ) {
+		$corsi_con_prezzi = $corsi_con_prezzi || '' !== trim( (string) $r['prezzo'] );
+	}
+}
 
-$sponsor = array();
-for ( $i = 1; $i <= 12; $i++ ) {
-	if ( vd( 'sponsor_' . $i ) ) {
-		$sponsor[] = vd( 'sponsor_' . $i );
+// Prezzo a persona più basso, per il riquadro dei numeri.
+$persona_min = null;
+foreach ( $tariffe as $t ) {
+	$n = vd_num( vd_tariffa_persona( $t ) );
+	if ( null !== $n && ( null === $persona_min || $n < $persona_min ) ) {
+		$persona_min = $n;
 	}
 }
 ?>
@@ -87,8 +108,12 @@ for ( $i = 1; $i <= 12; $i++ ) {
 			<div class="stats">
 				<div class="stat reveal"><strong data-count="2">2</strong><span>campi panoramici</span></div>
 				<div class="stat reveal"><strong data-count="100" data-prefix="&lt;">&lt;100</strong><span>metri dal mare</span></div>
-				<div class="stat reveal"><strong data-count="15">15</strong><span>ore al giorno di gioco</span></div>
-				<div class="stat reveal"><strong data-count="7">7</strong><span>giorni su 7</span></div>
+				<div class="stat reveal"><strong data-count="3">3</strong><span>categorie di tornei</span></div>
+				<?php if ( null !== $persona_min ) : ?>
+					<div class="stat reveal"><strong <?php echo floor( $persona_min ) == $persona_min ? 'data-count="' . (int) $persona_min . '" data-suffix="€"' : ''; ?>><?php echo esc_html( vd_fmt( $persona_min ) ); ?>€</strong><span>a persona per giocare</span></div>
+				<?php else : ?>
+					<div class="stat reveal"><strong data-count="4">4</strong><span>giocatori a campo</span></div>
+				<?php endif; ?>
 			</div>
 
 			<div class="features">
@@ -124,43 +149,74 @@ for ( $i = 1; $i <= 12; $i++ ) {
 			<div class="section__head reveal">
 				<p class="eyebrow">Prezzi</p>
 				<h2>Semplici e <em>trasparenti</em>.</h2>
-				<p class="section__sub">Prezzo per campo, 4 giocatori. Disdetta gratuita fino a 24 ore prima.</p>
+				<p class="section__sub">Prezzo del campo intero, con il costo a persona già calcolato.</p>
 			</div>
 
-			<div class="prices">
-				<article class="price reveal" data-tilt>
-					<p class="price__time">1 ora</p>
-					<p class="price__amount"><span><?php echo esc_html( vd( 'prezzo_60' ) ); ?></span>€</p>
-					<p class="price__per"><strong><?php echo esc_html( vd_a_persona( vd( 'prezzo_60' ) ) ); ?> €</strong> a persona</p>
-					<ul class="price__list">
-						<li>Disdetta entro 24h</li>
-						<li>Campo panoramico</li>
-					</ul>
-					<a href="<?php echo esc_url( $playtomic ); ?>" class="btn btn--ghost" target="_blank" rel="noopener">Prenota 1 ora</a>
-				</article>
+			<?php if ( $tariffe || $extra ) : ?>
+			<div class="prices<?php echo $extra ? '' : ' prices--solo'; ?>">
+				<?php foreach ( $tariffe as $t ) : ?>
+					<?php
+					$classi = 'price reveal';
+					if ( ! empty( $t['evidenza'] ) ) {
+						$classi .= ' price--hot';
+					}
+					if ( vd_in_offerta( $t ) ) {
+						$classi .= ' price--sale';
+					}
+					$attuale = vd_num( vd_prezzo_attuale( $t ) );
+					$persona = vd_tariffa_persona( $t );
+					$note    = array_filter( array_map( 'trim', explode( "\n", $t['note'] ) ) );
+					?>
+					<article class="<?php echo esc_attr( $classi ); ?>" data-tilt>
+						<div class="price__badges">
+							<?php if ( ! empty( $t['evidenza'] ) ) : ?>
+								<span class="price__badge"><?php echo esc_html( $t['etichetta'] ? $t['etichetta'] : 'In evidenza' ); ?></span>
+							<?php endif; ?>
+							<?php if ( vd_in_offerta( $t ) ) : ?>
+								<span class="price__badge price__badge--sale">Offerta</span>
+							<?php endif; ?>
+						</div>
+						<p class="price__time"><?php echo esc_html( $t['nome'] ); ?></p>
+						<?php if ( vd_in_offerta( $t ) && null !== vd_num( $t['prezzo'] ) ) : ?>
+							<p class="price__old"><del><?php echo esc_html( vd_fmt( vd_num( $t['prezzo'] ) ) ); ?> €</del></p>
+						<?php endif; ?>
+						<p class="price__amount"><span><?php echo esc_html( null !== $attuale ? vd_fmt( $attuale ) : vd_prezzo_attuale( $t ) ); ?></span><?php echo null !== $attuale ? '€' : ''; ?></p>
+						<?php if ( $persona ) : ?>
+							<p class="price__per"><strong><?php echo esc_html( $persona ); ?> €</strong> a persona · <?php echo (int) $t['persone']; ?> giocatori</p>
+						<?php endif; ?>
+						<ul class="price__list">
+							<?php foreach ( $note as $n ) : ?>
+								<li><?php echo esc_html( $n ); ?></li>
+							<?php endforeach; ?>
+						</ul>
+						<a href="<?php echo esc_url( $playtomic ); ?>" class="btn <?php echo ! empty( $t['evidenza'] ) ? 'btn--lime' : 'btn--ghost'; ?>" target="_blank" rel="noopener">Prenota <?php echo esc_html( $t['nome'] ); ?></a>
+					</article>
+				<?php endforeach; ?>
 
-				<article class="price price--hot reveal" data-tilt>
-					<span class="price__badge">Più scelto</span>
-					<p class="price__time">1 ora e 30</p>
-					<p class="price__amount"><span><?php echo esc_html( vd( 'prezzo_90' ) ); ?></span>€</p>
-					<p class="price__per"><strong><?php echo esc_html( vd_a_persona( vd( 'prezzo_90' ) ) ); ?> €</strong> a persona</p>
-					<ul class="price__list">
-						<li>Disdetta entro 24h</li>
-						<li>Campo panoramico</li>
-					</ul>
-					<a href="<?php echo esc_url( $playtomic ); ?>" class="btn btn--lime" target="_blank" rel="noopener">Prenota 1h30</a>
-				</article>
-
-				<div class="extras reveal">
-					<h3>Extra</h3>
-					<ul>
-						<li><span>Tubo di palline</span><b><?php echo esc_html( vd( 'palline' ) ); ?> €</b></li>
-						<li><span>Noleggio racchetta</span><b><?php echo esc_html( vd( 'racchetta' ) ); ?> €</b></li>
-						<li><span>Overgrip</span><b><?php echo esc_html( vd( 'overgrip' ) ); ?> €</b></li>
-					</ul>
-					<p class="extras__note">Non hai la racchetta? Nessun problema, la trovi da noi.</p>
-				</div>
+				<?php if ( $extra ) : ?>
+					<div class="extras reveal">
+						<h3>Extra</h3>
+						<ul>
+							<?php foreach ( $extra as $e ) : ?>
+								<li class="<?php echo ! empty( $e['evidenza'] ) ? 'is-star' : ''; ?><?php echo vd_in_offerta( $e ) ? ' is-sale' : ''; ?>">
+									<span>
+										<?php echo esc_html( $e['nome'] ); ?>
+										<?php if ( ! empty( $e['evidenza'] ) ) : ?>
+											<em class="extras__tag"><?php echo esc_html( $e['etichetta'] ? $e['etichetta'] : 'Novità' ); ?></em>
+										<?php endif; ?>
+										<?php if ( vd_in_offerta( $e ) ) : ?>
+											<em class="extras__tag extras__tag--sale">Offerta</em>
+										<?php endif; ?>
+									</span>
+									<span class="extras__price"><?php echo vd_prezzo_html( $e ); // phpcs:ignore -- già escapato in vd_prezzo_html() ?></span>
+								</li>
+							<?php endforeach; ?>
+						</ul>
+						<p class="extras__note">Non hai la racchetta? Nessun problema, la trovi da noi.</p>
+					</div>
+				<?php endif; ?>
 			</div>
+			<?php endif; ?>
 		</div>
 	</section>
 
@@ -179,31 +235,52 @@ for ( $i = 1; $i <= 12; $i++ ) {
 				</div>
 
 				<div class="accordion">
-					<details class="acc reveal" open>
-						<summary><span>Lezioni con istruttore FITP</span><i></i></summary>
-						<div class="acc__body">
-							<p>Lezioni individuali o di gruppo, per imparare i colpi base o perfezionare la tecnica.</p>
-							<ul class="tags"><li>1 persona</li><li>2 persone</li><li>3 persone</li></ul>
-						</div>
-					</details>
-					<details class="acc reveal">
-						<summary><span>Allenamenti personalizzati</span><i></i></summary>
-						<div class="acc__body">
-							<p>Programmi su misura per atleti singoli o coppie che preparano tornei e competizioni.</p>
-							<ul class="tags"><li>1 persona</li><li>2 persone</li></ul>
-						</div>
-					</details>
-					<details class="acc reveal">
-						<summary><span>Scuola padel junior</span><i></i></summary>
-						<div class="acc__body">
-							<p>Il padel per i più giovani: otto lezioni al mese con istruttore federale.</p>
-							<p class="acc__price"><b><?php echo esc_html( vd( 'junior' ) ); ?> €</b> / mese · 8 lezioni</p>
-						</div>
-					</details>
+					<?php foreach ( $corsi as $i => $c ) : ?>
+						<?php
+						$righe = array_values( array_filter( $c['righe'], function ( $r ) {
+							return '' !== trim( (string) $r['prezzo'] );
+						} ) );
+						?>
+						<details class="acc reveal<?php echo ! empty( $c['evidenza'] ) ? ' acc--star' : ''; ?>" <?php echo $i === $corso_aperto ? 'open' : ''; ?>>
+							<summary>
+								<span>
+									<?php echo esc_html( $c['nome'] ); ?>
+									<?php if ( ! empty( $c['evidenza'] ) ) : ?>
+										<em class="acc__tag"><?php echo esc_html( $c['etichetta'] ? $c['etichetta'] : 'Novità' ); ?></em>
+									<?php endif; ?>
+								</span>
+								<i></i>
+							</summary>
+							<div class="acc__body">
+								<?php if ( $c['descrizione'] ) : ?>
+									<p><?php echo nl2br( esc_html( $c['descrizione'] ) ); ?></p>
+								<?php endif; ?>
+								<?php if ( $righe ) : ?>
+									<ul class="acc__prices">
+										<?php foreach ( $righe as $r ) : ?>
+											<li class="<?php echo vd_in_offerta( $r ) ? 'is-sale' : ''; ?>">
+												<span><?php echo esc_html( $r['chi'] ); ?><?php if ( vd_in_offerta( $r ) ) : ?> <em class="extras__tag extras__tag--sale">Offerta</em><?php endif; ?></span>
+												<span class="acc__amount"><?php echo vd_prezzo_html( $r, $r['unita'] ); // phpcs:ignore -- già escapato ?></span>
+											</li>
+										<?php endforeach; ?>
+									</ul>
+								<?php else : ?>
+									<?php $chi = array_filter( wp_list_pluck( $c['righe'], 'chi' ) ); ?>
+									<?php if ( $chi ) : ?>
+										<ul class="tags">
+											<?php foreach ( $chi as $x ) : ?>
+												<li><?php echo esc_html( $x ); ?></li>
+											<?php endforeach; ?>
+										</ul>
+									<?php endif; ?>
+								<?php endif; ?>
+							</div>
+						</details>
+					<?php endforeach; ?>
 				</div>
 
 				<div class="corsi__cta reveal">
-					<p>Vuoi sapere orari e prezzi delle lezioni?</p>
+					<p><?php echo $corsi_con_prezzi ? 'Vuoi prenotare una lezione?' : 'Vuoi sapere orari e prezzi delle lezioni?'; ?></p>
 					<div class="hero__actions">
 						<a href="<?php echo esc_url( $whatsapp . '?text=' . rawurlencode( 'Ciao, vorrei informazioni sui corsi di padel' ) ); ?>" class="btn btn--lime" target="_blank" rel="noopener">
 							<svg viewBox="0 0 24 24" aria-hidden="true" class="ico-fill"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.3 0 .5l-.3.5-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.1 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2z"/></svg>
@@ -216,9 +293,58 @@ for ( $i = 1; $i <= 12; $i++ ) {
 		</div>
 	</section>
 
+	<!-- ============ TORNEI ============ -->
+	<section class="section section--dark" id="tornei">
+		<div class="wrap">
+			<div class="section__head section__head--row reveal">
+				<div>
+					<p class="eyebrow">Tornei</p>
+					<h2>Mettiti in <em>gioco</em>.</h2>
+				</div>
+				<a href="<?php echo esc_url( get_post_type_archive_link( 'torneo' ) ); ?>" class="btn btn--ghost">Tutti i tornei</a>
+			</div>
+
+			<?php if ( $tornei ) : ?>
+				<div class="tornei">
+					<?php foreach ( $tornei as $t ) : ?>
+						<?php
+						$categoria = get_post_meta( $t->ID, '_vd_categoria', true );
+						$quota     = get_post_meta( $t->ID, '_vd_quota', true );
+						$orario    = get_post_meta( $t->ID, '_vd_orario', true );
+						?>
+						<article class="torneo-card reveal">
+							<a class="torneo-card__link" href="<?php echo esc_url( get_permalink( $t ) ); ?>" aria-label="<?php echo esc_attr( get_the_title( $t ) ); ?>"></a>
+							<div class="torneo-card__date">
+								<strong><?php echo esc_html( vd_torneo_data( $t->ID, 'j' ) ); ?></strong>
+								<span><?php echo esc_html( vd_torneo_data( $t->ID, 'M' ) ); ?></span>
+							</div>
+							<div class="torneo-card__body">
+								<?php if ( $categoria ) : ?><p class="torneo-card__cat"><?php echo esc_html( $categoria ); ?></p><?php endif; ?>
+								<h3><?php echo esc_html( get_the_title( $t ) ); ?></h3>
+								<p class="torneo-card__meta">
+									<?php echo esc_html( ucfirst( vd_torneo_data( $t->ID, 'l j F' ) ) ); ?>
+									<?php if ( $orario ) : ?> · <?php echo esc_html( $orario ); ?><?php endif; ?>
+									<?php if ( $quota ) : ?><br><?php echo esc_html( $quota ); ?><?php endif; ?>
+								</p>
+								<a href="<?php echo esc_url( vd_torneo_iscrizione( $t->ID ) ); ?>" class="btn btn--lime torneo-card__cta" target="_blank" rel="noopener">Iscriviti</a>
+							</div>
+						</article>
+					<?php endforeach; ?>
+				</div>
+			<?php else : ?>
+				<div class="tornei-vuoto reveal">
+					<p><strong>Nessun torneo in calendario in questo momento.</strong> Doppio maschile, femminile e misto: segui Instagram per sapere quando apriamo le iscrizioni.</p>
+					<?php if ( vd( 'instagram' ) ) : ?>
+						<a href="<?php echo esc_url( vd( 'instagram' ) ); ?>" class="btn btn--lime" target="_blank" rel="noopener">Seguici su Instagram</a>
+					<?php endif; ?>
+				</div>
+			<?php endif; ?>
+		</div>
+	</section>
+
 	<!-- ============ GALLERIA ============ -->
 	<?php if ( $galleria ) : ?>
-	<section class="section section--dark" id="galleria">
+	<section class="section" id="galleria">
 		<div class="wrap">
 			<div class="section__head reveal">
 				<p class="eyebrow">Galleria</p>
@@ -226,12 +352,22 @@ for ( $i = 1; $i <= 12; $i++ ) {
 			</div>
 
 			<div class="gallery">
-				<?php foreach ( $galleria as $i => $src ) : ?>
-					<a href="<?php echo esc_url( $src ); ?>" class="gallery__item <?php echo esc_attr( $formati[ $i ] ); ?> reveal">
-						<img src="<?php echo esc_url( $src ); ?>" alt="Il centro Valley d'Or – foto <?php echo (int) ( $i + 1 ); ?>" loading="lazy">
-					</a>
+				<?php foreach ( $galleria as $i => $f ) : ?>
+					<?php if ( $i < $in_home ) : ?>
+						<a href="<?php echo esc_url( $f['full'] ); ?>" class="gallery__item <?php echo esc_attr( $formati[ $i ] ); ?> reveal" data-alt="<?php echo esc_attr( $f['alt'] ); ?>">
+							<img src="<?php echo esc_url( $f['thumb'] ); ?>" alt="<?php echo esc_attr( $f['alt'] ); ?>" loading="lazy">
+						</a>
+					<?php else : ?>
+						<a href="<?php echo esc_url( $f['full'] ); ?>" class="gallery__item gallery__item--extra" data-alt="<?php echo esc_attr( $f['alt'] ); ?>" hidden></a>
+					<?php endif; ?>
 				<?php endforeach; ?>
 			</div>
+
+			<?php if ( count( $galleria ) > $in_home ) : ?>
+				<p class="gallery__more reveal">
+					<button type="button" class="btn btn--ghost-dark" data-open-gallery="<?php echo (int) $in_home; ?>">Vedi tutte le <?php echo (int) count( $galleria ); ?> foto</button>
+				</p>
+			<?php endif; ?>
 		</div>
 	</section>
 	<?php endif; ?>
@@ -244,8 +380,8 @@ for ( $i = 1; $i <= 12; $i++ ) {
 		</div>
 		<div class="sponsors__rail">
 			<div class="sponsors__track" id="sponsorTrack">
-				<?php foreach ( $sponsor as $src ) : ?>
-					<img src="<?php echo esc_url( $src ); ?>" alt="Sponsor" loading="lazy">
+				<?php foreach ( $sponsor as $f ) : ?>
+					<img src="<?php echo esc_url( $f['thumb'] ); ?>" alt="<?php echo esc_attr( $f['alt'] ); ?>" loading="lazy">
 				<?php endforeach; ?>
 			</div>
 		</div>

@@ -62,13 +62,14 @@
   const runCounter = (el) => {
     const target = +el.dataset.count;
     const prefix = el.dataset.prefix || '';
-    if (reduce) { el.textContent = prefix + target; return; }
+    const suffix = el.dataset.suffix || '';
+    if (reduce) { el.textContent = prefix + target + suffix; return; }
     const dur = 1600;
     const t0 = performance.now();
     const tick = (t) => {
       const p = Math.min((t - t0) / dur, 1);
       const eased = 1 - Math.pow(1 - p, 4);
-      el.textContent = prefix + Math.round(target * eased);
+      el.textContent = prefix + Math.round(target * eased) + suffix;
       if (p < 1) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
@@ -120,13 +121,15 @@
   const show = (i) => {
     current = (i + items.length) % items.length;
     lbImg.src = items[current].getAttribute('href');
-    lbImg.alt = $('img', items[current]).alt;
+    lbImg.alt = items[current].dataset.alt || '';
     // riavvia l'animazione d'ingresso
     lbImg.style.animation = 'none'; void lbImg.offsetWidth; lbImg.style.animation = '';
   };
-  const openLb = (i) => { show(i); lb.hidden = false; document.body.style.overflow = 'hidden'; $('.lightbox__close', lb).focus(); };
-  const closeLb = () => { lb.hidden = true; document.body.style.overflow = ''; items[current].focus(); };
+  let lastFocus = null;
+  const openLb = (i) => { lastFocus = document.activeElement; show(i); lb.hidden = false; document.body.style.overflow = 'hidden'; $('.lightbox__close', lb).focus(); };
+  const closeLb = () => { lb.hidden = true; document.body.style.overflow = ''; (items[current].hidden ? lastFocus : items[current]).focus(); };
   items.forEach((a, i) => a.addEventListener('click', (e) => { e.preventDefault(); openLb(i); }));
+  $$('[data-open-gallery]').forEach(b => b.addEventListener('click', () => openLb(+b.dataset.openGallery)));
   $('.lightbox__close', lb).addEventListener('click', closeLb);
   $('.lightbox__prev', lb).addEventListener('click', () => show(current - 1));
   $('.lightbox__next', lb).addEventListener('click', () => show(current + 1));

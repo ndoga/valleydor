@@ -10,6 +10,7 @@
 			<a href="<?php echo esc_url( vd_anchor( 'centro' ) ); ?>">Il centro</a>
 			<a href="<?php echo esc_url( vd_anchor( 'prezzi' ) ); ?>">Prezzi</a>
 			<a href="<?php echo esc_url( vd_anchor( 'corsi' ) ); ?>">Corsi</a>
+			<a href="<?php echo esc_url( vd_anchor( 'tornei' ) ); ?>">Tornei</a>
 			<a href="<?php echo esc_url( vd_anchor( 'galleria' ) ); ?>">Galleria</a>
 			<a href="<?php echo esc_url( vd_anchor( 'dove' ) ); ?>">Dove siamo</a>
 		</nav>
@@ -28,6 +29,11 @@
 	</div>
 	<div class="wrap footer__bottom">
 		<p>© <?php echo esc_html( wp_date( 'Y' ) ); ?> <?php echo esc_html( get_bloginfo( 'name' ) ); ?> · <?php echo esc_html( vd( 'indirizzo' ) ); ?></p>
+		<?php if ( current_user_can( 'edit_theme_options' ) ) : ?>
+			<a class="footer__login" href="<?php echo esc_url( vd_pannello_url() ); ?>"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21v-2a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Gestisci il sito</a>
+		<?php else : ?>
+			<a class="footer__login" href="<?php echo esc_url( wp_login_url() ); ?>" rel="nofollow"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Area riservata</a>
+		<?php endif; ?>
 	</div>
 </footer>
 

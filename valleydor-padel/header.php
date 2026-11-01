@@ -21,6 +21,7 @@
 			<a href="<?php echo esc_url( vd_anchor( 'centro' ) ); ?>">Il centro</a>
 			<a href="<?php echo esc_url( vd_anchor( 'prezzi' ) ); ?>">Prezzi</a>
 			<a href="<?php echo esc_url( vd_anchor( 'corsi' ) ); ?>">Corsi</a>
+			<a href="<?php echo esc_url( vd_anchor( 'tornei' ) ); ?>">Tornei</a>
 			<a href="<?php echo esc_url( vd_anchor( 'galleria' ) ); ?>">Galleria</a>
 			<a href="<?php echo esc_url( vd_anchor( 'dove' ) ); ?>">Dove siamo</a>
 			<a href="<?php echo esc_url( vd( 'playtomic' ) ); ?>" class="btn btn--lime nav__cta" target="_blank" rel="noopener">Prenota</a>

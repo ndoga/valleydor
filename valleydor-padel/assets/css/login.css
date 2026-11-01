@@ -1,0 +1,151 @@
+/* Valley d'Or Padel – pagina di accesso */
+
+body.login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(160deg, rgba(11, 18, 20, .92), rgba(11, 18, 20, .78)),
+    var(--vd-bg) center / cover no-repeat fixed,
+    #0b1214;
+  font-family: "Mulish", system-ui, sans-serif;
+  color: #fff;
+}
+
+#login {
+  width: min(380px, 100% - 32px);
+  padding: 0;
+  margin: 40px auto;
+}
+
+#login h1 a {
+  width: 220px;
+  height: 84px;
+  margin: 0 auto 26px;
+  background-image: var(--vd-logo);
+  background-size: contain;
+  background-position: center;
+}
+
+.vd-login-intro {
+  margin: 0 0 18px;
+  text-align: center;
+  font-size: 15px;
+  color: rgba(255, 255, 255, .75);
+}
+.vd-login-intro strong {
+  display: block;
+  margin-bottom: 4px;
+  font-family: "Kanit", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 28px;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  color: #b3da2d;
+}
+
+.login form {
+  margin-top: 0;
+  padding: 28px 28px 30px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 22px;
+  background: rgba(18, 28, 31, .85);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, .7);
+}
+
+.login label {
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #9fb0b3;
+}
+
+.login form .input,
+.login input[type="text"],
+.login input[type="password"],
+.login input[type="email"] {
+  margin-top: 6px;
+  padding: 10px 14px;
+  border: 1.5px solid rgba(255, 255, 255, .15);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .06);
+  color: #fff;
+  font-size: 17px;
+  box-shadow: none;
+}
+.login form .input:focus,
+.login input[type="text"]:focus,
+.login input[type="password"]:focus {
+  border-color: #b3da2d;
+  box-shadow: 0 0 0 4px rgba(179, 218, 45, .25);
+  outline: 0;
+}
+
+.login .button.wp-hide-pw { color: #9fb0b3; }
+.login .button.wp-hide-pw:focus { border-color: #b3da2d; box-shadow: none; }
+.login .button.wp-hide-pw .dashicons { top: .4rem; }
+
+.login .forgetmenot label { font-size: 14px; letter-spacing: 0; text-transform: none; color: rgba(255, 255, 255, .8); }
+.login input[type="checkbox"] { border-color: rgba(255, 255, 255, .3); background: transparent; border-radius: 5px; }
+.login input[type="checkbox"]:checked::before { filter: brightness(0) saturate(100%) invert(80%) sepia(51%) saturate(600%) hue-rotate(25deg); }
+
+.login .button-primary,
+.wp-core-ui .button-primary {
+  float: none;
+  width: 100%;
+  height: auto;
+  margin-top: 18px;
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 999px;
+  background: #b3da2d;
+  color: #0b1214;
+  font-family: "Kanit", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  text-shadow: none;
+  box-shadow: 0 10px 30px -10px rgba(179, 218, 45, .7);
+  transition: transform .3s, background .3s;
+}
+.login .button-primary:hover,
+.login .button-primary:focus,
+.wp-core-ui .button-primary:hover,
+.wp-core-ui .button-primary:focus {
+  background: #c4ea3c;
+  color: #0b1214;
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px -10px rgba(179, 218, 45, .9);
+}
+.login .forgetmenot { float: none; }
+.login .submit { clear: both; }
+
+.login #nav,
+.login #backtoblog {
+  padding: 0;
+  margin: 16px 0 0;
+  text-align: center;
+}
+.login #nav a,
+.login #backtoblog a { color: rgba(255, 255, 255, .7); text-decoration: none; }
+.login #nav a:hover,
+.login #backtoblog a:hover { color: #b3da2d; }
+
+.login .message,
+.login .notice,
+.login .success,
+.login #login_error {
+  border: 0;
+  border-left: 4px solid #b3da2d;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .95);
+  color: #0b1214;
+}
+.login #login_error { border-left-color: #e5484d; }
+
+.login .language-switcher,
+.login .privacy-policy-page-link { display: none; }

@@ -7,7 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'VD_VERSION', '1.0.0' );
+define( 'VD_VERSION', '1.2.0' );
+
+require get_template_directory() . '/inc/listini.php';
+require get_template_directory() . '/inc/tornei.php';
+require get_template_directory() . '/inc/pannello.php';
+require get_template_directory() . '/inc/accesso.php';
 
 /* ----------------------------------------------------------
  * Impostazioni di base
@@ -67,16 +72,24 @@ function vd_defaults() {
 		'hero_luogo'  => 'La Ciaccia · Valledoria · Sardegna',
 		'hero_testo'  => "Due campi panoramici, istruttori federali e tornei tutto l'anno. Scegli l'orario, porta gli amici: al resto pensiamo noi.",
 		'hero_img'    => $img . 'notte-1.jpg',
-		// Prezzi
+		// Prezzi e corsi della versione 1.1: valori iniziali dei listini (inc/listini.php)
 		'prezzo_60'   => '32',
 		'prezzo_90'   => '48',
 		'palline'     => '7,50',
 		'racchetta'   => '2,50',
 		'overgrip'    => '2,50',
-		// Corsi
+		// Corsi (prezzi delle lezioni facoltativi: se vuoti si mostra solo "chiedi info")
 		'corsi_img'   => $img . 'corsi.jpg',
 		'junior'      => '100',
+		'lez_1'       => '',
+		'lez_2'       => '',
+		'lez_3'       => '',
+		'all_1'       => '',
+		'all_2'       => '',
 		'cta_img'     => $img . 'notte-2.jpg',
+		// Foto scelte dal pannello (ID della libreria media, separati da virgola)
+		'galleria_ids' => '',
+		'sponsor_ids'  => '',
 	);
 
 	$galleria = array( 'notte-2', 'campo-1', 'torneo-1', 'torneo-2', 'foto-6', 'campo-2', 'foto-3', 'foto-4', 'foto-5' );
@@ -95,11 +108,51 @@ function vd( $key ) {
 	return get_theme_mod( $key, isset( $d[ $key ] ) ? $d[ $key ] : '' );
 }
 
-/** Prezzo a persona (campo da 4 giocatori), formato italiano. */
-function vd_a_persona( $prezzo ) {
-	$n = (float) str_replace( ',', '.', $prezzo );
-	$p = $n / 4;
-	return ( floor( $p ) == $p ) ? number_format( $p, 0, ',', '.' ) : number_format( $p, 2, ',', '.' );
+/**
+ * Foto della galleria o degli sponsor.
+ * Se dal pannello sono state scelte foto della libreria media si usano quelle,
+ * altrimenti le foto predefinite del tema.
+ *
+ * @param string $tipo 'galleria' o 'sponsor'.
+ * @return array Elenco di array( 'full' => url, 'thumb' => url, 'alt' => testo, 'id' => int ).
+ */
+function vd_foto( $tipo ) {
+	$foto = array();
+	foreach ( vd_ids( vd( $tipo . '_ids' ) ) as $id ) {
+		$full = wp_get_attachment_image_url( $id, 'full' );
+		if ( ! $full ) {
+			continue;
+		}
+		$alt    = get_post_meta( $id, '_wp_attachment_image_alt', true );
+		$foto[] = array(
+			'id'    => $id,
+			'full'  => $full,
+			'thumb' => wp_get_attachment_image_url( $id, 'sponsor' === $tipo ? 'medium_large' : 'large' ),
+			'alt'   => $alt ? $alt : get_the_title( $id ),
+		);
+	}
+	if ( $foto ) {
+		return $foto;
+	}
+
+	$max = 'sponsor' === $tipo ? 12 : 9;
+	for ( $i = 1; $i <= $max; $i++ ) {
+		$url = vd( $tipo . '_' . $i );
+		if ( $url ) {
+			$foto[] = array(
+				'id'    => 0,
+				'full'  => $url,
+				'thumb' => $url,
+				'alt'   => 'sponsor' === $tipo ? 'Sponsor' : "Il centro Valley d'Or",
+			);
+		}
+	}
+	return $foto;
+}
+
+/** Elenco di ID numerici da una stringa "12,5,9". */
+function vd_ids( $csv ) {
+	return array_values( array_filter( array_map( 'absint', explode( ',', (string) $csv ) ) ) );
 }
 
 /** Collegamento a una sezione della home, valido da qualsiasi pagina. */
@@ -159,24 +212,23 @@ add_action( 'wp_head', function () {
 } );
 
 /* ----------------------------------------------------------
- * Personalizza: tutto ciò che cambia spesso si modifica da
- * Aspetto › Personalizza, senza toccare il codice.
+ * Personalizza: testi, contatti e foto che cambiano di rado.
+ * Prezzi, orari, corsi, galleria e sponsor si gestiscono dal
+ * pannello "Valley d'Or" (inc/pannello.php), i tornei dal menu Tornei.
  * -------------------------------------------------------- */
 add_action( 'customize_register', function ( $wp_customize ) {
 	$d = vd_defaults();
 
 	$wp_customize->add_panel( 'vd', array(
-		'title'    => "Valley d'Or",
-		'priority' => 30,
+		'title'       => "Valley d'Or",
+		'description' => 'Prezzi, orari, galleria e sponsor si cambiano dal menu "Valley d\'Or" della bacheca; i tornei dal menu "Tornei".',
+		'priority'    => 30,
 	) );
 
 	$sezioni = array(
 		'vd_contatti' => 'Contatti e prenotazioni',
 		'vd_apertura' => 'Apertura della pagina',
-		'vd_prezzi'   => 'Prezzi',
 		'vd_corsi'    => 'Corsi',
-		'vd_galleria' => 'Galleria',
-		'vd_sponsor'  => 'Sponsor',
 	);
 	foreach ( $sezioni as $id => $titolo ) {
 		$wp_customize->add_section( $id, array( 'title' => $titolo, 'panel' => 'vd' ) );
@@ -219,7 +271,6 @@ add_action( 'customize_register', function ( $wp_customize ) {
 	$testo( 'whatsapp', 'vd_contatti', 'Numero WhatsApp', 'text', 'Solo cifre con prefisso internazionale, senza + (es. 393884891265).' );
 	$testo( 'email', 'vd_contatti', 'Email', 'email' );
 	$testo( 'indirizzo', 'vd_contatti', 'Indirizzo' );
-	$testo( 'orari', 'vd_contatti', 'Orari di apertura' );
 	$testo( 'lat', 'vd_contatti', 'Latitudine (mappa)' );
 	$testo( 'lng', 'vd_contatti', 'Longitudine (mappa)' );
 	$testo( 'playtomic', 'vd_contatti', 'Link prenotazione Playtomic', 'url' );
@@ -234,22 +285,6 @@ add_action( 'customize_register', function ( $wp_customize ) {
 	$foto( 'hero_img', 'vd_apertura', 'Foto di sfondo' );
 	$foto( 'cta_img', 'vd_apertura', 'Foto della chiamata finale ("Pronto a scendere in campo?")' );
 
-	// Prezzi
-	$testo( 'prezzo_60', 'vd_prezzi', 'Campo 1 ora (€)', 'text', 'Il prezzo a persona viene calcolato da solo (diviso 4).' );
-	$testo( 'prezzo_90', 'vd_prezzi', 'Campo 1 ora e 30 (€)' );
-	$testo( 'palline', 'vd_prezzi', 'Tubo di palline (€)' );
-	$testo( 'racchetta', 'vd_prezzi', 'Noleggio racchetta (€)' );
-	$testo( 'overgrip', 'vd_prezzi', 'Overgrip (€)' );
-
 	// Corsi
 	$foto( 'corsi_img', 'vd_corsi', 'Foto dell\'istruttore' );
-	$testo( 'junior', 'vd_corsi', 'Scuola padel junior – prezzo mensile (€)' );
-
-	// Galleria e sponsor
-	for ( $i = 1; $i <= 9; $i++ ) {
-		$foto( 'galleria_' . $i, 'vd_galleria', 'Foto ' . $i );
-	}
-	for ( $i = 1; $i <= 12; $i++ ) {
-		$foto( 'sponsor_' . $i, 'vd_sponsor', 'Sponsor ' . $i );
-	}
 } );

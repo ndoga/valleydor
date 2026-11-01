@@ -20,6 +20,8 @@ get_header();
 					echo 'Pagina non trovata';
 				} elseif ( is_home() ) {
 					echo 'Notizie';
+				} elseif ( is_post_type_archive() ) {
+					post_type_archive_title();
 				} else {
 					the_archive_title();
 				}
@@ -39,7 +41,27 @@ get_header();
 					<?php if ( has_post_thumbnail() ) : ?>
 						<div class="entry__img"><?php the_post_thumbnail( 'large' ); ?></div>
 					<?php endif; ?>
-					<?php if ( is_single() ) : ?>
+					<?php if ( 'torneo' === get_post_type() ) : ?>
+						<?php
+						$categoria = get_post_meta( get_the_ID(), '_vd_categoria', true );
+						$orario    = get_post_meta( get_the_ID(), '_vd_orario', true );
+						$quota     = get_post_meta( get_the_ID(), '_vd_quota', true );
+						$futuro    = get_post_meta( get_the_ID(), '_vd_data', true ) >= wp_date( 'Y-m-d' );
+						?>
+						<div class="torneo-info">
+							<dl>
+								<div><dt>Data</dt><dd><?php echo esc_html( ucfirst( vd_torneo_data( get_the_ID(), 'l j F Y' ) ) ); ?></dd></div>
+								<?php if ( $orario ) : ?><div><dt>Orario</dt><dd><?php echo esc_html( $orario ); ?></dd></div><?php endif; ?>
+								<?php if ( $categoria ) : ?><div><dt>Categoria</dt><dd><?php echo esc_html( $categoria ); ?></dd></div><?php endif; ?>
+								<?php if ( $quota ) : ?><div><dt>Iscrizione</dt><dd><?php echo esc_html( $quota ); ?></dd></div><?php endif; ?>
+							</dl>
+							<?php if ( $futuro ) : ?>
+								<a href="<?php echo esc_url( vd_torneo_iscrizione( get_the_ID() ) ); ?>" class="btn btn--lime" target="_blank" rel="noopener">Iscriviti</a>
+							<?php else : ?>
+								<p class="torneo-info__fine">Torneo concluso</p>
+							<?php endif; ?>
+						</div>
+					<?php elseif ( is_single() ) : ?>
 						<p class="entry__date"><?php echo esc_html( get_the_date() ); ?></p>
 					<?php endif; ?>
 					<div class="entry__content"><?php the_content(); ?></div>
@@ -54,7 +76,7 @@ get_header();
 							<?php the_post_thumbnail( 'medium_large' ); ?>
 						<?php endif; ?>
 						<div class="card__body">
-							<p class="entry__date"><?php echo esc_html( get_the_date() ); ?></p>
+							<p class="entry__date"><?php echo esc_html( 'torneo' === get_post_type() ? vd_torneo_data( get_the_ID() ) : get_the_date() ); ?></p>
 							<h2><?php the_title(); ?></h2>
 							<p><?php echo esc_html( wp_trim_words( get_the_excerpt(), 22 ) ); ?></p>
 						</div>

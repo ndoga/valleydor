@@ -8,7 +8,7 @@ due campi panoramici a 100 metri dal mare.
 | Cartella | Cosa contiene |
 | --- | --- |
 | `valleydor-padel/` | **Tema WordPress** da installare sul sito |
-| `index.html`, `css/`, `js/`, `img/` | Anteprima statica (senza WordPress) usata per definire la grafica |
+| `index.html`, `css/`, `js/`, `img/` | Anteprima statica senza WordPress (pubblicata su GitHub Pages): solo grafica, senza area riservata |
 
 ## Installare il tema
 
@@ -19,18 +19,49 @@ due campi panoramici a 100 metri dal mare.
 La home usa `front-page.php`, qualunque sia l'impostazione di *Impostazioni › Lettura*.
 Pagine interne, articoli e 404 usano `index.php`.
 
-## Modificare i contenuti
+## Area riservata per il titolare
 
-Da **Aspetto › Personalizza › Valley d'Or**, senza toccare il codice:
+L'accesso è quello di WordPress (`/wp-login.php`, link **Area riservata** in fondo al sito), con la grafica
+del sito. Per il titolare conviene creare un utente con il ruolo **Gestore del centro**
+(*Utenti › Aggiungi nuovo*): dopo l'accesso arriva direttamente al pannello e vede solo
+Valley d'Or, Tornei, Articoli, Media, Aspetto e Profilo. Non può installare plugin, gestire utenti,
+cambiare tema o impostazioni.
 
-- **Contatti e prenotazioni**: telefono, WhatsApp, email, indirizzo, orari, coordinate della mappa,
-  link Playtomic, Facebook, Instagram, shortcode di un modulo contatti (es. Contact Form 7)
-- **Apertura della pagina**: nome in grande, testi, foto di sfondo
-- **Prezzi**: campo 1 ora e 1 ora e 30 (il prezzo a persona è calcolato da solo), extra
-- **Corsi**: foto dell'istruttore, prezzo della scuola junior
-- **Galleria** (9 foto) e **Sponsor** (12 loghi): una foto rimossa viene saltata
+### Pannello "Valley d'Or" (bacheca)
 
-Il logo si cambia da *Identità del sito*.
+Una sola pagina, salvataggio con un pulsante.
+
+**Tariffe del campo**, **Extra** e **Corsi** sono tabelle: ogni voce si aggiunge, si toglie e si
+riordina trascinandola, e ha tre comandi:
+
+- **Visibile**: spento, la voce resta salvata ma non compare sul sito
+- **In offerta a**: se compilato, sul sito il prezzo normale compare barrato con il badge "Offerta"
+- **In evidenza**: bordo e badge con un'etichetta a scelta (es. "Più scelto", "Novità")
+
+Dettagli per tipo:
+
+- **Tariffe**: nome, prezzo del campo, giocatori (il prezzo a persona è calcolato da solo),
+  cosa include (una riga per voce)
+- **Extra**: nome e prezzo
+- **Corsi**: nome, descrizione e un elenco di prezzi (per chi, prezzo, testo dopo il prezzo come
+  "/ ora", offerta). Senza prezzi sul sito compare "chiedi info". Il primo corso in evidenza si
+  apre da solo.
+- **Orari** di apertura
+- **Galleria** e **Sponsor**: foto scelte dalla libreria media, si riordinano trascinandole.
+  In home compaiono 9 foto, le altre con "Vedi tutte le foto". Finché non si sceglie nulla
+  il sito mostra le foto predefinite del tema.
+
+### Tornei (menu Tornei)
+
+Ogni torneo ha titolo, descrizione, locandina, data, orario, categoria, quota e link di iscrizione
+(se manca, il pulsante "Iscriviti" apre WhatsApp con un messaggio pronto). I tornei futuri compaiono
+da soli in home (i 3 più vicini); l'elenco completo è su `/tornei/`.
+
+### Personalizza
+
+Da **Aspetto › Personalizza › Valley d'Or** le cose che cambiano di rado: contatti, link Playtomic e
+social, coordinate della mappa, shortcode di un modulo contatti (es. Contact Form 7), nome in grande,
+testi e foto dell'apertura, foto dell'istruttore. Il logo si cambia da *Identità del sito*.
 
 ## Struttura del tema
 
@@ -38,9 +69,19 @@ Il logo si cambia da *Identità del sito*.
 | --- | --- |
 | `style.css` | Intestazione del tema e tutta la grafica |
 | `functions.php` | Caricamento di stili e script, valori predefiniti, impostazioni del Personalizza, dati strutturati |
-| `header.php`, `footer.php` | Menu, piè di pagina, pulsante fisso "Prenota" su mobile, lightbox |
+| `inc/listini.php` | Tariffe, extra e corsi: valori iniziali, prezzi, offerte, pulizia dei dati |
+| `inc/pannello.php` | Pannello "Valley d'Or" nella bacheca (prezzi, orari, corsi, galleria, sponsor) |
+| `inc/tornei.php` | Tipo di contenuto Torneo, dettagli, colonne nella bacheca, prossimi tornei |
+| `inc/accesso.php` | Pagina di accesso, ruolo "Gestore del centro", bacheca semplificata |
+| `header.php`, `footer.php` | Menu, piè di pagina con area riservata, pulsante fisso "Prenota" su mobile, lightbox |
 | `front-page.php` | Home a pagina unica |
-| `index.php` | Pagine interne, articoli, archivi, 404 |
+| `index.php` | Pagine interne, articoli, tornei, archivi, 404 |
 | `assets/js/main.js` | Animazioni, menu mobile, contatori, galleria |
+| `assets/js/pannello.js`, `assets/css/pannello.css` | Scelta e ordinamento delle foto nel pannello |
+| `assets/css/login.css` | Grafica della pagina di accesso |
+
+I valori del pannello e del Personalizza sono salvati come `theme_mod` (tariffe, extra e corsi come
+elenchi: `tariffe`, `extra`, `corsi`); i dettagli dei tornei come
+meta del post (`_vd_data`, `_vd_orario`, `_vd_categoria`, `_vd_quota`, `_vd_iscrizioni`).
 
 Requisiti: WordPress 6.0+, PHP 7.4+. Nessun plugin necessario.

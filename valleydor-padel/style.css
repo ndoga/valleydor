@@ -3,7 +3,7 @@ Theme Name: Valley d'Or Padel
 Theme URI: https://www.valleydor.it/
 Author: Valley d'Or
 Description: Tema su misura per il centro padel Valley d'Or di La Ciaccia – Valledoria. Home a pagina unica animata con prezzi, corsi, galleria, sponsor e mappa. Testi, prezzi e foto si modificano da Aspetto › Personalizza › Valley d'Or.
-Version: 1.0.0
+Version: 1.2.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GNU General Public License v2 or later
@@ -879,3 +879,195 @@ h3 { font-size: 1.35rem; font-weight: 700; }
   text-transform: uppercase;
   cursor: pointer;
 }
+
+/* ==========================================================
+   Tornei, prezzi dei corsi, galleria completa, area riservata
+   ========================================================== */
+.section__head--row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  max-width: none;
+}
+
+.tornei { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+.torneo-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 22px;
+  padding: 28px;
+  border-radius: var(--radius);
+  background: var(--ink-2);
+  border: 1px solid var(--line);
+  transition: transform .5s var(--ease), border-color .4s;
+}
+.torneo-card:hover { transform: translateY(-6px); border-color: rgba(179, 218, 45, .5); }
+.torneo-card__link { position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
+.torneo-card__date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 78px;
+  height: 86px;
+  border-radius: 16px;
+  background: var(--lime);
+  color: var(--ink);
+  font-family: var(--font-head);
+  text-transform: uppercase;
+  line-height: 1;
+}
+.torneo-card__date strong { font-size: 2.4rem; font-weight: 800; }
+.torneo-card__date span { font-weight: 700; letter-spacing: .1em; font-size: .85rem; }
+.torneo-card__cat {
+  margin: 0 0 .4rem;
+  color: var(--lime);
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: .8rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.torneo-card h3 { font-size: 1.5rem; margin-bottom: .5rem; }
+.torneo-card__meta { margin: 0 0 1.2rem; color: var(--muted-dark); }
+.torneo-card__cta { position: relative; z-index: 2; padding: .6em 1.3em; font-size: .9rem; }
+
+.tornei-vuoto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 32px 34px;
+  border-radius: var(--radius);
+  border: 1px dashed rgba(179, 218, 45, .45);
+  background: var(--ink-2);
+}
+.tornei-vuoto p { margin: 0; max-width: 620px; color: var(--muted-dark); }
+.tornei-vuoto strong { display: block; color: var(--white); font-size: 1.15rem; margin-bottom: .3rem; }
+
+.acc__prices { list-style: none; padding: 0; margin: 16px 0 0; }
+.acc__prices li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .55em 0;
+  border-bottom: 1.5px dashed rgba(11, 18, 20, .15);
+  color: var(--ink);
+  font-weight: 600;
+}
+.acc__prices b { font-family: var(--font-head); font-size: 1.15rem; }
+
+.gallery__item--extra { display: none; }
+.gallery__more { margin: 34px 0 0; text-align: center; }
+
+.footer__bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; }
+.footer__bottom p { margin-top: 24px; }
+.footer__login {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  color: var(--muted-dark);
+  text-decoration: none;
+  font-size: .9rem;
+  font-weight: 600;
+  transition: color .3s;
+}
+.footer__login svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.footer__login:hover { color: var(--lime); }
+
+.torneo-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 34px;
+  padding: 24px 28px;
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: var(--white);
+}
+.torneo-info dl { display: flex; flex-wrap: wrap; gap: 14px 34px; margin: 0; }
+.torneo-info dt { color: var(--lime); font-family: var(--font-head); font-weight: 700; font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; }
+.torneo-info dd { margin: 0; font-weight: 700; font-size: 1.05rem; }
+.torneo-info__fine { margin: 0; color: var(--muted-dark); font-weight: 700; }
+
+@media (max-width: 560px) {
+  .torneo-card { grid-template-columns: 1fr; gap: 16px; padding: 22px; }
+  .torneo-card__date { flex-direction: row; gap: 8px; width: auto; height: auto; padding: 10px 16px; justify-self: start; }
+  .torneo-card__date strong { font-size: 1.6rem; }
+}
+
+/* ==========================================================
+   Listini dal pannello: numero libero di tariffe, offerte, evidenza
+   ========================================================== */
+:root { --sale: #ff5a5f; }
+
+.prices { grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); }
+.prices .extras { grid-column: auto; }
+
+.price__badges {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+  max-width: 70%;
+}
+.price__badges .price__badge { position: static; }
+.price__badge--sale { background: var(--sale); color: var(--white); }
+.price--sale { border-color: rgba(255, 90, 95, .45); }
+.price__old { margin: .4em 0 -.3em; color: var(--muted-dark); font-weight: 700; }
+.price__old del { text-decoration-color: var(--sale); text-decoration-thickness: 2px; }
+.price--sale .price__amount span { color: var(--white); }
+.price--sale .price__amount { color: var(--sale); }
+.price__list:empty { display: none; }
+.price__list:empty + .btn { margin-top: auto; }
+
+.extras li { align-items: center; }
+.extras li > span:first-child { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.extras__tag {
+  display: inline-block;
+  padding: .15em .65em;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--lime);
+  font-family: var(--font-head);
+  font-style: normal;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.extras__tag--sale { background: var(--sale); color: var(--white); }
+.extras li.is-star { font-weight: 800; }
+.extras__price { white-space: nowrap; text-align: right; }
+.extras__price b { font-family: var(--font-head); font-size: 1.2rem; }
+.extras__price del,
+.acc__amount del { margin-right: .3em; opacity: .55; font-weight: 600; text-decoration-color: var(--sale); text-decoration-thickness: 2px; }
+.extras__price small,
+.acc__amount small { font-weight: 600; opacity: .7; }
+
+.acc--star { border-color: rgba(179, 218, 45, .7); }
+.acc summary > span { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.acc__tag {
+  padding: .2em .7em;
+  border-radius: 999px;
+  background: var(--lime);
+  color: var(--ink);
+  font-style: normal;
+  font-size: .72rem;
+  letter-spacing: .06em;
+}
+.acc__prices li { align-items: baseline; }
+.acc__prices li > span:first-child { display: inline-flex; align-items: center; gap: 6px; }
+.acc__amount { white-space: nowrap; text-align: right; }
+.acc__amount b { font-family: var(--font-head); font-size: 1.15rem; }
+.acc__prices li.is-sale .acc__amount b { color: #c62f33; }
