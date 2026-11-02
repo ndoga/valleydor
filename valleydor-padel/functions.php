@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'VD_VERSION', '1.3.1' );
+define( 'VD_VERSION', '1.3.2' );
 
 require get_template_directory() . '/inc/listini.php';
 require get_template_directory() . '/inc/galleria.php';

@@ -54,7 +54,7 @@ function vd_corsi() {
 	};
 	return array(
 		vd_voce( array(
-			'nome'        => 'Lezioni con istruttore FITP',
+			'nome'        => 'Lezioni con istruttore federale',
 			'descrizione' => 'Lezioni individuali o di gruppo, per imparare i colpi base o perfezionare la tecnica.',
 			'righe'       => $righe( array( '1 persona' => vd( 'lez_1' ), '2 persone' => vd( 'lez_2' ), '3 persone' => vd( 'lez_3' ) ) ),
 		) ),

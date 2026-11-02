@@ -35,7 +35,7 @@ $prezzo   = vd_num( vd( 'clinic_prezzo' ) );
 			<ul class="clinic__numeri">
 				<li><strong><?php echo esc_html( str_replace( '-', '–', vd( 'clinic_giorni' ) ) ); ?></strong><span>giorni di clinic</span></li>
 				<li><strong><?php echo esc_html( vd( 'clinic_ore' ) ); ?>h</strong><span>di padel al giorno</span></li>
-				<li><strong>FITP</strong><span>istruttore federale</span></li>
+				<li><strong>100 m</strong><span>dal mare</span></li>
 			</ul>
 
 			<section class="clinic__sez">

@@ -183,7 +183,7 @@ foreach ( $tariffe as $t ) {
 						<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="14" r="7"/><path d="M10 42c0-8 6-14 14-14s14 6 14 14M30 34l3 3 6-6"/></svg>
 					</div>
 					<h3>Istruttori federali</h3>
-					<p>Lezioni e allenamenti personalizzati con istruttori FITP, per chi inizia e per chi vuole crescere.</p>
+					<p>Lezioni e allenamenti personalizzati con istruttori federali, per chi inizia e per chi vuole crescere.</p>
 				</article>
 			</div>
 		</div>
