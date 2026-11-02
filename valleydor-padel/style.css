@@ -3,7 +3,7 @@ Theme Name: Valley d'Or Padel
 Theme URI: https://www.valleydor.it/
 Author: Valley d'Or
 Description: Tema su misura per il centro padel Valley d'Or di La Ciaccia – Valledoria. Home a pagina unica animata con prezzi, corsi, galleria, sponsor e mappa. Testi, prezzi e foto si modificano da Aspetto › Personalizza › Valley d'Or.
-Version: 1.2.5
+Version: 1.2.6
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GNU General Public License v2 or later
@@ -293,8 +293,8 @@ h3 { font-size: 1.35rem; font-weight: 700; }
 /* pallina che rimbalza */
 .ball {
   position: absolute;
-  right: 12%;
-  bottom: 18%;
+  right: 4%;
+  bottom: 36%; /* nell'angolo libero sopra il cartello in evidenza */
   width: 64px; height: 64px;
   border-radius: 50%;
   background:
@@ -1113,8 +1113,8 @@ h3 { font-size: 1.35rem; font-weight: 700; }
 /* Pulsante in evidenza: un cartello che ogni tanto "trema", come quelli delle offerte */
 .promo {
   position: absolute;
-  right: 20%;
-  bottom: 70px; /* poco sotto i pulsanti (l'area del testo ha 110px di margine in basso) */
+  right: 9%;
+  bottom: 140px; /* all'altezza dei pulsanti, verso destra (l'area del testo ha 110px di margine in basso) */
   z-index: 3;
   display: inline-flex;
   align-items: center;
@@ -1196,7 +1196,7 @@ h3 { font-size: 1.35rem; font-weight: 700; }
 @keyframes bollino { 50% { transform: rotate(12deg) scale(1.1); } }
 
 @media (max-width: 1100px) {
-  .promo { right: 6%; }
+  .promo { right: 4%; bottom: 70px; } /* schermi medi: più in basso, sotto il testo */
 }
 @media (max-width: 860px) {
   /* Su schermi stretti il cartello va subito sotto il titolo, nella prima schermata */
