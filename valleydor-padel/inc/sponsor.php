@@ -9,29 +9,32 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/** Sponsor predefiniti: banner del tema con nome e sito (quando è scritto sul banner). */
+/**
+ * Sponsor predefiniti: banner del tema con nome, senza link, e visibilità scelta
+ * dal titolare (6 visibili, 6 nascosti ma pronti da riattivare dal pannello).
+ */
 function vd_sponsor_predefiniti() {
 	$img   = get_template_directory_uri() . '/assets/img/';
 	$elenco = array(
-		array( 'Agriturismo Bedda Ista', 'https://www.agriturismobeddaista.it' ),
-		array( 'GDV s.r.l.', '' ),
-		array( 'Ideal Sistem – infissi in PVC', '' ),
-		array( 'Maguledda Costruzioni e Immobiliare', 'https://www.maguleddaimmobiliare.com' ),
-		array( 'CL Costruzioni', 'https://www.clcostruzioni.com' ),
-		array( 'Homes in Sardinia – vendite immobiliari', 'https://www.homesinsardinia.com' ),
-		array( 'Gomme & Service – Centro revisioni Pala', '' ),
-		array( 'Bar Aurelio', '' ),
-		array( 'Tenda System – living outdoor design', 'https://www.tendaggivalledoria.com' ),
-		array( 'STEM Costruzioni', '' ),
-		array( 'Ital Home – gruppo agenzie immobiliari', '' ),
-		array( 'HB Agency – advertising solution', 'https://www.hbagency.it' ),
+		array( 'Agriturismo Bedda Ista', false ),
+		array( 'GDV s.r.l.', false ),
+		array( 'Ideal Sistem – infissi in PVC', false ),
+		array( 'Maguledda Costruzioni e Immobiliare', false ),
+		array( 'CL Costruzioni', true ),
+		array( 'Homes in Sardinia – vendite immobiliari', true ),
+		array( 'Gomme & Service – Centro revisioni Pala', true ),
+		array( 'Bar Aurelio', false ),
+		array( 'Tenda System – living outdoor design', true ),
+		array( 'STEM Costruzioni', false ),
+		array( 'Ital Home – gruppo agenzie immobiliari', true ),
+		array( 'HB Agency – advertising solution', true ),
 	);
 	$out = array();
 	foreach ( $elenco as $i => $s ) {
 		$out[] = vd_sponsor_voce( array(
-			'img_url' => $img . 'sponsor-' . ( $i + 1 ) . '.jpg',
-			'nome'    => $s[0],
-			'link'    => $s[1],
+			'img_url'  => $img . 'sponsor-' . ( $i + 1 ) . '.jpg',
+			'nome'     => $s[0],
+			'visibile' => $s[1],
 		) );
 	}
 	return $out;

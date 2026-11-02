@@ -1,16 +1,9 @@
 {
-	"landingPage": "/wp-admin/admin.php?page=valleydor",
-	"features": {
-		"networking": true
-	},
-	"preferredVersions": {
-		"wp": "latest",
-		"php": "8.3"
-	},
+	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
 	"steps": [
 		{
-			"language": "it_IT",
-			"step": "setSiteLanguage"
+			"step": "setSiteLanguage",
+			"language": "it_IT"
 		},
 		{
 			"options": {
@@ -23,32 +16,39 @@
 				"targetFolderName": "valleydor-padel",
 				"activate": true
 			},
+			"step": "installTheme",
 			"themeData": {
 				"url": "https://github.com/ndoga/valleydor",
-				"resource": "git:directory",
+				"ref": "main",
 				"refType": "branch",
 				"path": "valleydor-padel",
-				"ref": "main"
-			},
-			"step": "installTheme"
+				"resource": "git:directory"
+			}
 		},
 		{
-			"code": "<?php\n/**\n * Prepara la demo su WordPress Playground (eseguito dal passo runPHP di demo/blueprint.json,\n * che è generato da demo/genera-blueprint.py: modificare questo file e rigenerare).\n *\n * Crea l'utente \"gestore\" (ruolo Gestore del centro), carica le foto del tema nella\n * libreria media per la galleria, aggiunge tre tornei di esempio.\n * Tutto vive solo nel browser di chi apre la demo e sparisce chiudendo la scheda.\n */\nrequire '/wordpress/wp-load.php';\nrequire_once ABSPATH . 'wp-admin/includes/image.php';\nrequire_once ABSPATH . 'wp-admin/includes/file.php';\nrequire_once ABSPATH . 'wp-admin/includes/media.php';\n\nupdate_option( 'permalink_structure', '/%postname%/' );\nupdate_option( 'timezone_string', 'Europe/Rome' );\nupdate_option( 'blogdescription', 'Padel a 100 metri dal mare' );\n\n// Ruolo e indirizzi /tornei/ (li crea anche il tema al primo caricamento).\nif ( function_exists( 'vd_crea_ruolo' ) ) {\n\tvd_crea_ruolo();\n\tvd_registra_tornei();\n}\n\n// Utente demo del titolare.\nif ( ! get_user_by( 'login', 'gestore' ) ) {\n\twp_insert_user( array(\n\t\t'user_login'   => 'gestore',\n\t\t'user_pass'    => 'demo',\n\t\t'user_email'   => 'gestore@example.test',\n\t\t'display_name' => 'Titolare',\n\t\t'role'         => 'vd_gestore',\n\t\t'locale'       => 'it_IT',\n\t) );\n}\n\n// Foto del tema nella libreria media (stesso elenco della galleria predefinita).\n$dir    = get_template_directory() . '/assets/img/';\n$carica = function ( $percorso, $alt = '' ) {\n\t$nome = basename( $percorso );\n\t$tmp  = wp_tempnam( $nome );\n\tcopy( $percorso, $tmp );\n\t$id = media_handle_sideload( array( 'name' => $nome, 'tmp_name' => $tmp ), 0 );\n\tif ( is_wp_error( $id ) ) {\n\t\treturn 0;\n\t}\n\tif ( $alt ) {\n\t\tupdate_post_meta( $id, '_wp_attachment_image_alt', $alt );\n\t}\n\treturn $id;\n};\n$foto = function ( $nome ) use ( $carica, $dir ) {\n\treturn $carica( $dir . $nome );\n};\n$galleria = array();\n$torneo   = 0;\nforeach ( vd_galleria_elenco() as $voce ) {\n\tlist( $file, $alt ) = $voce;\n\t$id = $carica( $dir . ( 0 === strpos( $file, 'valleydor-padel-' ) ? 'galleria/' : '' ) . $file, $alt );\n\tif ( false !== strpos( $file, 'torneo-premiazione' ) && ! $torneo ) {\n\t\t$torneo = $id;\n\t}\n\t$galleria[] = $id;\n}\n$foto( 'corsi.jpg' );\nset_theme_mod( 'galleria_ids', implode( ',', array_filter( $galleria ) ) );\n// Sponsor: si usano quelli predefiniti del tema (con nomi e link).\n\n// Tornei di esempio (date relative a oggi).\n$tornei = array(\n\tarray( 'Torneo del weekend', '+12 days', 'Doppio misto', '20 € a coppia', 'dalle 9:00', 'Due giorni di padel a 100 metri dal mare. Premi per le prime tre coppie e grigliata finale per tutti.' ),\n\tarray( \"Coppa Valley d'Or\", '+30 days', 'Doppio maschile', '25 € a coppia', 'dalle 10:00', 'Il torneo storico del centro: tabellone a eliminazione diretta, finale in notturna.' ),\n\tarray( 'Torneo rosa', '+50 days', 'Doppio femminile', '15 € a coppia', '', 'Torneo dedicato alle giocatrici di tutti i livelli, con gironi e tabellone finale.' ),\n);\nforeach ( $tornei as $t ) {\n\t$id = wp_insert_post( array(\n\t\t'post_type'    => 'torneo',\n\t\t'post_status'  => 'publish',\n\t\t'post_title'   => $t[0],\n\t\t'post_content' => $t[5],\n\t) );\n\tupdate_post_meta( $id, '_vd_data', wp_date( 'Y-m-d', strtotime( $t[1] ) ) );\n\tupdate_post_meta( $id, '_vd_categoria', $t[2] );\n\tupdate_post_meta( $id, '_vd_quota', $t[3] );\n\tupdate_post_meta( $id, '_vd_orario', $t[4] );\n\tif ( $torneo ) {\n\t\tset_post_thumbnail( $id, $torneo );\n\t}\n}\n\nflush_rewrite_rules();\n",
-			"step": "runPHP"
+			"step": "runPHP",
+			"code": "<?php\n/**\n * Prepara la demo su WordPress Playground (eseguito dal passo runPHP di demo/blueprint.json,\n * che è generato da demo/genera-blueprint.py: modificare questo file e rigenerare).\n *\n * Crea l'utente \"gestore\" (ruolo Gestore del centro), carica le foto del tema nella\n * libreria media per la galleria, aggiunge tre tornei di esempio.\n * Tutto vive solo nel browser di chi apre la demo e sparisce chiudendo la scheda.\n */\nrequire '/wordpress/wp-load.php';\nrequire_once ABSPATH . 'wp-admin/includes/image.php';\nrequire_once ABSPATH . 'wp-admin/includes/file.php';\nrequire_once ABSPATH . 'wp-admin/includes/media.php';\n\nupdate_option( 'permalink_structure', '/%postname%/' );\nupdate_option( 'timezone_string', 'Europe/Rome' );\nupdate_option( 'blogdescription', 'Padel a 100 metri dal mare' );\n\n// Ruolo e indirizzi /tornei/ (li crea anche il tema al primo caricamento).\nif ( function_exists( 'vd_crea_ruolo' ) ) {\n\tvd_crea_ruolo();\n\tvd_registra_tornei();\n}\n\n// Utente demo del titolare.\nif ( ! get_user_by( 'login', 'gestore' ) ) {\n\twp_insert_user( array(\n\t\t'user_login'   => 'gestore',\n\t\t'user_pass'    => 'demo',\n\t\t'user_email'   => 'gestore@example.test',\n\t\t'display_name' => 'Titolare',\n\t\t'role'         => 'vd_gestore',\n\t\t'locale'       => 'it_IT',\n\t) );\n}\n\n// Foto del tema nella libreria media (stesso elenco della galleria predefinita).\n$dir    = get_template_directory() . '/assets/img/';\n$carica = function ( $percorso, $alt = '' ) {\n\t$nome = basename( $percorso );\n\t$tmp  = wp_tempnam( $nome );\n\tcopy( $percorso, $tmp );\n\t$id = media_handle_sideload( array( 'name' => $nome, 'tmp_name' => $tmp ), 0 );\n\tif ( is_wp_error( $id ) ) {\n\t\treturn 0;\n\t}\n\tif ( $alt ) {\n\t\tupdate_post_meta( $id, '_wp_attachment_image_alt', $alt );\n\t}\n\treturn $id;\n};\n$foto = function ( $nome ) use ( $carica, $dir ) {\n\treturn $carica( $dir . $nome );\n};\n$galleria = array();\n$torneo   = 0;\nforeach ( vd_galleria_elenco() as $voce ) {\n\tlist( $file, $alt ) = $voce;\n\t$id = $carica( $dir . ( 0 === strpos( $file, 'valleydor-padel-' ) ? 'galleria/' : '' ) . $file, $alt );\n\tif ( false !== strpos( $file, 'torneo-premiazione' ) && ! $torneo ) {\n\t\t$torneo = $id;\n\t}\n\t$galleria[] = $id;\n}\n$foto( 'corsi.jpg' );\nset_theme_mod( 'galleria_ids', implode( ',', array_filter( $galleria ) ) );\n// Sponsor: si usano quelli predefiniti del tema (con nomi e link).\n\n// Tornei di esempio (date relative a oggi).\n$tornei = array(\n\tarray( 'Torneo del weekend', '+12 days', 'Doppio misto', '20 € a coppia', 'dalle 9:00', 'Due giorni di padel a 100 metri dal mare. Premi per le prime tre coppie e grigliata finale per tutti.' ),\n\tarray( \"Coppa Valley d'Or\", '+30 days', 'Doppio maschile', '25 € a coppia', 'dalle 10:00', 'Il torneo storico del centro: tabellone a eliminazione diretta, finale in notturna.' ),\n\tarray( 'Torneo rosa', '+50 days', 'Doppio femminile', '15 € a coppia', '', 'Torneo dedicato alle giocatrici di tutti i livelli, con gironi e tabellone finale.' ),\n);\nforeach ( $tornei as $t ) {\n\t$id = wp_insert_post( array(\n\t\t'post_type'    => 'torneo',\n\t\t'post_status'  => 'publish',\n\t\t'post_title'   => $t[0],\n\t\t'post_content' => $t[5],\n\t) );\n\tupdate_post_meta( $id, '_vd_data', wp_date( 'Y-m-d', strtotime( $t[1] ) ) );\n\tupdate_post_meta( $id, '_vd_categoria', $t[2] );\n\tupdate_post_meta( $id, '_vd_quota', $t[3] );\n\tupdate_post_meta( $id, '_vd_orario', $t[4] );\n\tif ( $torneo ) {\n\t\tset_post_thumbnail( $id, $torneo );\n\t}\n}\n\nflush_rewrite_rules();\n"
 		},
 		{
-			"username": "gestore",
+			"step": "login",
 			"password": "demo",
-			"step": "login"
+			"username": "gestore"
 		}
 	],
-	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
+	"landingPage": "/wp-admin/admin.php?page=valleydor",
 	"meta": {
 		"categories": [
 			"theme"
 		],
-		"title": "Valley d'Or Padel – demo dell'area riservata",
+		"description": "Tema Valley d'Or con pannello di gestione, tornei e utente Gestore del centro.",
 		"author": "ndoga",
-		"description": "Tema Valley d'Or con pannello di gestione, tornei e utente Gestore del centro."
+		"title": "Valley d'Or Padel – demo dell'area riservata"
+	},
+	"features": {
+		"networking": true
+	},
+	"preferredVersions": {
+		"php": "8.3",
+		"wp": "latest"
 	}
 }
