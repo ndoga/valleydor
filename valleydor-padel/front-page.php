@@ -68,8 +68,12 @@ foreach ( $tariffe as $t ) {
 					foreach ( $parole as $k => $parola ) {
 						$classe = ( $k === count( $parole ) - 1 && count( $parole ) > 1 ) ? 'w w--or' : 'w';
 						echo '<span class="' . $classe . '" aria-hidden="true">';
-						foreach ( preg_split( '//u', $parola, -1, PREG_SPLIT_NO_EMPTY ) as $c ) {
-							echo '<span class="ch" style="--i:' . (int) $n++ . '">' . esc_html( $c ) . '</span>';
+						$lettere = preg_split( '//u', $parola, -1, PREG_SPLIT_NO_EMPTY );
+						foreach ( $lettere as $j => $c ) {
+							// Lettere separate perdono la crenatura del carattere: la si rimette a mano.
+							$kern = isset( $lettere[ $j + 1 ] ) ? vd_crenatura( $c, $lettere[ $j + 1 ] ) : 0;
+							$stile = '--i:' . (int) $n++ . ( $kern ? ';--k:' . $kern . 'em' : '' );
+							echo '<span class="ch" style="' . esc_attr( $stile ) . '">' . esc_html( $c ) . '</span>';
 						}
 						echo '</span> ';
 					}

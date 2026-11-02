@@ -3,7 +3,7 @@ Theme Name: Valley d'Or Padel
 Theme URI: https://www.valleydor.it/
 Author: Valley d'Or
 Description: Tema su misura per il centro padel Valley d'Or di La Ciaccia – Valledoria. Home a pagina unica animata con prezzi, corsi, galleria, sponsor e mappa. Testi, prezzi e foto si modificano da Aspetto › Personalizza › Valley d'Or.
-Version: 1.2.1
+Version: 1.2.2
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GNU General Public License v2 or later
@@ -215,6 +215,7 @@ h3 { font-size: 1.35rem; font-weight: 700; }
 }
 .hero__name .ch {
   display: inline-block;
+  margin-right: var(--k, 0em); /* crenatura con la lettera successiva (vd_crenatura) */
   transform: translateY(105%) rotate(10deg);
   transform-origin: left bottom;
   animation: charUp 1s var(--ease) forwards;
@@ -222,8 +223,13 @@ h3 { font-size: 1.35rem; font-weight: 700; }
 }
 @keyframes charUp { to { transform: none; } }
 
-.hero__name .w--or { font-style: italic; }
+/* In corsivo le lettere sporgono a destra del loro riquadro: la cornice della parola
+   e il riquadro di ogni lettera (dove si dipinge il verde con il riflesso) vanno
+   allargati, compensando con margini negativi per non cambiare la spaziatura. */
+.hero__name .w--or { font-style: italic; padding-right: .3em; margin-right: -.3em; }
 .hero__name .w--or .ch {
+  padding: 0 .16em 0 .04em;
+  margin: 0 calc(-.16em + var(--k, 0em)) 0 -.04em;
   color: transparent;
   background: linear-gradient(105deg, var(--lime) 0%, var(--lime) 40%, #f3ffc2 50%, var(--lime) 60%, var(--lime) 100%);
   background-size: 300% 100%;

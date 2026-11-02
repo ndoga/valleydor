@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'VD_VERSION', '1.2.1' );
+define( 'VD_VERSION', '1.2.2' );
 
 require get_template_directory() . '/inc/listini.php';
 require get_template_directory() . '/inc/tornei.php';
@@ -148,6 +148,52 @@ function vd_foto( $tipo ) {
 		}
 	}
 	return $foto;
+}
+
+/**
+ * Crenatura (avvicinamento) tra due lettere maiuscole del carattere Kanit 800, in em.
+ * Il nome in apertura è diviso in lettere separate per l'animazione e il browser non
+ * applica più la crenatura del carattere: questi valori sono misurati da Kanit stesso
+ * (coppie con almeno 0,03 em; es. VA = -0,135 em).
+ */
+function vd_crenatura( $a, $b ) {
+	static $tabella = null;
+	if ( null === $tabella ) {
+		$righe   = array(
+			"A:A-.035 C-.055 G-.055 O-.055 Q-.055 T-.085 U-.045 V-.135 W-.095 X-.030 Y-.145 '-.085",
+			'B:A-.035 V-.065 X-.055 Y-.075',
+			'C:V-.030',
+			'D:A-.055 V-.050 X-.065 Y-.085',
+			'F:A-.060 J-.030',
+			'G:V-.035 Y-.045',
+			'J:A-.035',
+			'K:A-.045 C-.065 G-.065 O-.065 Q-.065 S-.035 T-.035 U-.050 V-.035 W-.030 X-.035 Y-.035',
+			"L:T-.070 V-.125 W-.060 Y-.145 '-.045",
+			'O:A-.055 V-.050 X-.065 Y-.085',
+			'P:A-.080 J-.040 V-.045 W-.035 X-.055 Y-.045',
+			'Q:A-.055 V-.050 X-.065 Y-.085',
+			'R:A-.045 V-.065 W-.030 Y-.065',
+			'S:A-.045 V-.045 Y-.045',
+			'T:A-.085 J-.060 T.035',
+			'U:A-.045 X-.035 Y-.035',
+			'V:A-.135 C-.050 G-.050 J-.100 O-.050 Q-.050 S-.045 W-.035 Y-.035',
+			'W:A-.095 J-.060 V-.035 X-.035 Y-.035',
+			'X:A-.030 C-.065 G-.065 J-.055 O-.065 Q-.065 S-.045 W-.035 Y-.035 Z-.035',
+			'Y:A-.145 C-.085 G-.085 J-.120 O-.085 Q-.085 S-.065 V-.035 W-.035 X-.035 Y-.035 Z-.035',
+			'Z:W-.035 X-.035',
+			"':A-.125 J-.085",
+		);
+		$tabella = array();
+		foreach ( $righe as $riga ) {
+			list( $prima, $coppie ) = explode( ':', $riga, 2 );
+			foreach ( explode( ' ', $coppie ) as $c ) {
+				$tabella[ $prima . $c[0] ] = (float) substr( $c, 1 );
+			}
+		}
+	}
+	// Il titolo è in maiuscolo; l'apostrofo tipografico vale come quello dritto.
+	$coppia = str_replace( '’', "'", strtoupper( $a ) . strtoupper( $b ) );
+	return isset( $tabella[ $coppia ] ) ? $tabella[ $coppia ] : 0;
 }
 
 /** Elenco di ID numerici da una stringa "12,5,9". */
