@@ -44,6 +44,7 @@
 	<button class="lightbox__close" aria-label="Chiudi">×</button>
 	<button class="lightbox__nav lightbox__prev" aria-label="Foto precedente">‹</button>
 	<img alt="">
+	<video class="lightbox__video" controls playsinline hidden></video>
 	<button class="lightbox__nav lightbox__next" aria-label="Foto successiva">›</button>
 </div>
 

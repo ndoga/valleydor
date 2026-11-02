@@ -38,6 +38,59 @@ add_action( 'admin_enqueue_scripts', function ( $hook ) {
 /* ----------------------------------------------------------
  * Salvataggio
  * -------------------------------------------------------- */
+/* ----------------------------------------------------------
+ * Foto predefinite della galleria → libreria media, così si
+ * possono togliere e riordinare una per una dal pannello.
+ * -------------------------------------------------------- */
+add_action( 'admin_post_vd_importa_galleria', function () {
+	if ( ! current_user_can( 'edit_theme_options' ) || ! current_user_can( 'upload_files' ) ) {
+		wp_die( 'Non hai i permessi per caricare foto.', 403 );
+	}
+	check_admin_referer( 'vd_importa_galleria' );
+	require_once ABSPATH . 'wp-admin/includes/image.php';
+	require_once ABSPATH . 'wp-admin/includes/file.php';
+	require_once ABSPATH . 'wp-admin/includes/media.php';
+	if ( function_exists( 'set_time_limit' ) ) {
+		set_time_limit( 300 );
+	}
+
+	$dir = get_template_directory() . '/assets/img/';
+	$ids = array();
+	foreach ( vd_galleria_elenco() as $voce ) {
+		list( $file, $alt ) = $voce;
+		// Già importata in passato? Si riusa, senza doppioni nella libreria.
+		$gia = get_posts( array(
+			'post_type'      => 'attachment',
+			'post_status'    => 'inherit',
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+			'meta_key'       => '_vd_origine',
+			'meta_value'     => $file,
+		) );
+		if ( $gia ) {
+			$ids[] = (int) $gia[0];
+			continue;
+		}
+		$percorso = $dir . ( 0 === strpos( $file, 'valleydor-padel-' ) ? 'galleria/' : '' ) . $file;
+		if ( ! file_exists( $percorso ) ) {
+			continue;
+		}
+		$tmp = wp_tempnam( $file );
+		copy( $percorso, $tmp );
+		$id = media_handle_sideload( array( 'name' => $file, 'tmp_name' => $tmp ), 0 );
+		if ( is_wp_error( $id ) ) {
+			continue;
+		}
+		update_post_meta( $id, '_wp_attachment_image_alt', $alt );
+		update_post_meta( $id, '_vd_origine', $file );
+		$ids[] = (int) $id;
+	}
+	set_theme_mod( 'galleria_ids', implode( ',', $ids ) );
+
+	wp_safe_redirect( add_query_arg( 'importate', count( $ids ), vd_pannello_url() ) );
+	exit;
+} );
+
 add_action( 'admin_post_vd_salva', function () {
 	if ( ! current_user_can( 'edit_theme_options' ) ) {
 		wp_die( 'Non hai i permessi per modificare il sito.', 403 );
@@ -78,10 +131,19 @@ add_action( 'admin_post_vd_salva', function () {
 		}
 	}
 
-	// Foto: solo immagini realmente presenti nella libreria media.
-	foreach ( array( 'galleria_ids', 'sponsor_ids' ) as $key ) {
+	// Sponsor: elenco con immagine, nome, link, visibile e ordine.
+	if ( isset( $_POST['vd_listini'] ) ) {
+		$raw = isset( $_POST['sponsor'] ) ? wp_unslash( $_POST['sponsor'] ) : array(); // phpcs:ignore -- ripulito in vd_pulisci_sponsor()
+		set_theme_mod( 'sponsor', vd_pulisci_sponsor( $raw ) );
+	}
+
+	// Foto della galleria: solo immagini (e video) realmente presenti nella libreria media.
+	foreach ( array( 'galleria_ids' ) as $key ) {
 		if ( isset( $_POST[ $key ] ) ) {
-			$ids = array_filter( vd_ids( wp_unslash( $_POST[ $key ] ) ), 'wp_attachment_is_image' );
+			$ammessi = function ( $id ) use ( $key ) {
+				return wp_attachment_is_image( $id ) || ( 'galleria_ids' === $key && wp_attachment_is( 'video', $id ) );
+			};
+			$ids = array_filter( vd_ids( wp_unslash( $_POST[ $key ] ) ), $ammessi );
 			set_theme_mod( $key, implode( ',', array_unique( $ids ) ) );
 		}
 	}
@@ -241,6 +303,40 @@ function vd_riga_corso( $k, $v ) {
 	<?php
 }
 
+/** Riga di uno sponsor: banner, nome, link, visibile. */
+function vd_riga_sponsor( $k, $v ) {
+	$v   = vd_sponsor_voce( $v );
+	$b   = 'sponsor[' . $k . ']';
+	$img = vd_sponsor_img( $v, 'medium_large' );
+	?>
+	<div class="<?php echo esc_attr( vd_row_class( vd_voce( $v ) ) ); ?> vd-row--sponsor">
+		<span class="vd-row__handle dashicons dashicons-move" title="Trascina per cambiare l'ordine"></span>
+		<div class="vd-row__fields">
+			<div class="vd-f vd-f--wide vd-sponsor">
+				<span>Banner</span>
+				<button type="button" class="vd-sponsor__img" title="Cambia immagine">
+					<img src="<?php echo esc_url( $img ); ?>" alt="" <?php echo $img ? '' : 'hidden'; ?>>
+					<span class="vd-sponsor__vuoto" <?php echo $img ? 'hidden' : ''; ?>><span class="dashicons dashicons-format-image"></span> Scegli il banner</span>
+				</button>
+				<input type="hidden" class="vd-js-img-id" name="<?php echo esc_attr( $b ); ?>[img_id]" value="<?php echo (int) $v['img_id']; ?>">
+				<input type="hidden" class="vd-js-img-url" name="<?php echo esc_attr( $b ); ?>[img_url]" value="<?php echo esc_attr( $v['img_url'] ); ?>">
+			</div>
+			<?php vd_campo( $b . '[nome]', 'Nome (per Google e lettori di schermo)', $v['nome'], 'vd-f--nome', 'placeholder="es. Bar Aurelio"' ); ?>
+			<label class="vd-f vd-f--link"><span>Link al sito <small>(facoltativo)</small></span>
+				<input type="url" name="<?php echo esc_attr( $b ); ?>[link]" value="<?php echo esc_attr( $v['link'] ); ?>" placeholder="https://…">
+			</label>
+		</div>
+		<div class="vd-row__flags">
+			<label class="vd-toggle" title="Se spento, lo sponsor resta salvato ma non compare sul sito">
+				<input type="checkbox" class="vd-js-visibile" name="<?php echo esc_attr( $b ); ?>[visibile]" value="1" <?php checked( ! empty( $v['visibile'] ) ); ?>>
+				<span class="vd-toggle__ui" aria-hidden="true"></span> Visibile
+			</label>
+			<button type="button" class="vd-row__del" title="Togli questo sponsor"><span class="dashicons dashicons-trash"></span><span class="screen-reader-text">Togli</span></button>
+		</div>
+	</div>
+	<?php
+}
+
 /** Elenco ordinabile con il modello per le righe nuove. */
 function vd_elenco( $tipo, $voci, $render, $aggiungi ) {
 	?>
@@ -258,21 +354,36 @@ function vd_elenco( $tipo, $voci, $render, $aggiungi ) {
 }
 
 /** Riquadro per scegliere e ordinare le foto dalla libreria media. */
-function vd_pannello_foto( $key, $titolo, $aiuto, $vuoto ) {
+function vd_pannello_foto( $key, $titolo, $aiuto, $vuoto, $video = false ) {
 	$ids = vd_ids( vd( $key ) );
 	?>
-	<div class="vd-media" data-title="<?php echo esc_attr( $titolo ); ?>">
+	<div class="vd-media" data-title="<?php echo esc_attr( $titolo ); ?>" data-tipi="<?php echo $video ? 'image,video' : 'image'; ?>">
 		<input type="hidden" name="<?php echo esc_attr( $key ); ?>" value="<?php echo esc_attr( implode( ',', $ids ) ); ?>">
 		<p class="vd-help"><?php echo esc_html( $aiuto ); ?></p>
-		<p class="vd-media__empty" <?php echo $ids ? 'hidden' : ''; ?>><?php echo esc_html( $vuoto ); ?></p>
+		<p class="vd-media__empty" <?php echo $ids ? 'hidden' : ''; ?>>
+			<?php echo esc_html( $vuoto ); ?>
+			<?php if ( 'galleria_ids' === $key && current_user_can( 'upload_files' ) ) : ?>
+				<br><a class="button vd-importa" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=vd_importa_galleria' ), 'vd_importa_galleria' ) ); ?>">
+					<span class="dashicons dashicons-images-alt2"></span> Porta le <?php echo (int) count( vd_galleria_elenco() ); ?> foto predefinite nella libreria
+				</a>
+				<small class="vd-importa__nota">Così puoi toglierle, riordinarle e aggiungerne altre. Ci vuole qualche secondo.</small>
+			<?php endif; ?>
+		</p>
 		<ul class="vd-media__list">
 			<?php foreach ( $ids as $id ) : ?>
-				<?php $thumb = wp_get_attachment_image_url( $id, 'thumbnail' ); ?>
-				<?php if ( $thumb ) : ?>
-					<li data-id="<?php echo (int) $id; ?>">
-						<img src="<?php echo esc_url( $thumb ); ?>" alt="">
-						<button type="button" class="vd-media__remove" aria-label="Togli questa foto">×</button>
+				<?php if ( wp_attachment_is( 'video', $id ) ) : ?>
+					<li data-id="<?php echo (int) $id; ?>" class="is-video">
+						<video src="<?php echo esc_url( wp_get_attachment_url( $id ) ); ?>" muted preload="metadata"></video>
+						<button type="button" class="vd-media__remove" aria-label="Togli questo video">×</button>
 					</li>
+				<?php else : ?>
+					<?php $thumb = wp_get_attachment_image_url( $id, 'thumbnail' ); ?>
+					<?php if ( $thumb ) : ?>
+						<li data-id="<?php echo (int) $id; ?>">
+							<img src="<?php echo esc_url( $thumb ); ?>" alt="">
+							<button type="button" class="vd-media__remove" aria-label="Togli questa foto">×</button>
+						</li>
+					<?php endif; ?>
 				<?php endif; ?>
 			<?php endforeach; ?>
 		</ul>
@@ -297,6 +408,10 @@ function vd_pannello_pagina() {
 				<span class="dashicons dashicons-external"></span> Vedi il sito
 			</a>
 		</header>
+
+		<?php if ( isset( $_GET['importate'] ) ) : // phpcs:ignore -- solo messaggio ?>
+			<div class="notice notice-success is-dismissible vd-notice"><p><strong>Fatto!</strong> <?php echo (int) $_GET['importate']; // phpcs:ignore ?> foto sono ora nella libreria e nella galleria: puoi toglierle, riordinarle o aggiungerne altre.</p></div>
+		<?php endif; ?>
 
 		<?php if ( isset( $_GET['salvato'] ) ) : // phpcs:ignore -- solo messaggio ?>
 			<div class="notice notice-success is-dismissible vd-notice"><p><strong>Fatto!</strong> Le modifiche sono già visibili sul sito.</p></div>
@@ -405,23 +520,18 @@ function vd_pannello_pagina() {
 				<?php
 				vd_pannello_foto(
 					'galleria_ids',
-					'Scegli le foto della galleria',
-					'Trascina le foto per cambiarne l\'ordine. In home ne compaiono 9; le altre si vedono con "Vedi tutte le foto".',
-					'Ora il sito mostra le 9 foto predefinite del tema. Aggiungi le tue foto per sostituirle.'
+					'Scegli foto e video della galleria',
+					'Foto e video (mp4). Trascinali per cambiare l\'ordine: i primi riempiono la griglia in home, gli altri si vedono con "Vedi tutte". I video partono da soli, senza audio; per l\'anteprima puoi dare al video un\'immagine in evidenza nella libreria media.',
+					'Ora il sito mostra le foto e i video predefiniti del tema. Aggiungi i tuoi per sostituirli.',
+					true
 				);
 				?>
 			</section>
 
 			<section class="vd-card">
 				<h2><span class="dashicons dashicons-star-filled"></span> Sponsor</h2>
-				<?php
-				vd_pannello_foto(
-					'sponsor_ids',
-					'Scegli i banner degli sponsor',
-					'Banner orizzontali (circa 1600 × 240). Scorrono in fila sul sito, nell\'ordine scelto qui.',
-					'Ora il sito mostra i 12 banner predefiniti del tema. Aggiungi i tuoi per sostituirli.'
-				);
-				?>
+				<p class="vd-help">Banner orizzontali (circa 1600 × 240): sul sito si vedono per intero, uno sotto l'altro, nell'ordine scelto qui. Con il link, toccando il banner si apre il sito dello sponsor.</p>
+				<?php vd_elenco( 'sponsor', vd_sponsor(), 'vd_riga_sponsor', 'Aggiungi uno sponsor' ); ?>
 			</section>
 
 			<div class="vd-savebar">

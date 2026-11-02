@@ -4,7 +4,7 @@
  * che è generato da demo/genera-blueprint.py: modificare questo file e rigenerare).
  *
  * Crea l'utente "gestore" (ruolo Gestore del centro), carica le foto del tema nella
- * libreria media per galleria e sponsor, aggiunge tre tornei di esempio.
+ * libreria media per la galleria, aggiunge tre tornei di esempio.
  * Tutto vive solo nel browser di chi apre la demo e sparisce chiudendo la scheda.
  */
 require '/wordpress/wp-load.php';
@@ -34,25 +34,37 @@ if ( ! get_user_by( 'login', 'gestore' ) ) {
 	) );
 }
 
-// Foto del tema nella libreria media.
-$dir  = get_template_directory() . '/assets/img/';
-$foto = function ( $nome ) use ( $dir ) {
-	$tmp = wp_tempnam( $nome );
-	copy( $dir . $nome, $tmp );
+// Foto del tema nella libreria media (stesso elenco della galleria predefinita).
+$dir    = get_template_directory() . '/assets/img/';
+$carica = function ( $percorso, $alt = '' ) {
+	$nome = basename( $percorso );
+	$tmp  = wp_tempnam( $nome );
+	copy( $percorso, $tmp );
 	$id = media_handle_sideload( array( 'name' => $nome, 'tmp_name' => $tmp ), 0 );
-	return is_wp_error( $id ) ? 0 : $id;
+	if ( is_wp_error( $id ) ) {
+		return 0;
+	}
+	if ( $alt ) {
+		update_post_meta( $id, '_wp_attachment_image_alt', $alt );
+	}
+	return $id;
+};
+$foto = function ( $nome ) use ( $carica, $dir ) {
+	return $carica( $dir . $nome );
 };
 $galleria = array();
-foreach ( array( 'notte-2', 'campo-1', 'torneo-1', 'torneo-2', 'foto-6', 'campo-2', 'foto-3', 'foto-4', 'foto-5', 'notte-1' ) as $n ) {
-	$galleria[] = $foto( $n . '.jpg' );
-}
-$sponsor = array();
-for ( $i = 1; $i <= 12; $i++ ) {
-	$sponsor[] = $foto( 'sponsor-' . $i . '.jpg' );
+$torneo   = 0;
+foreach ( vd_galleria_elenco() as $voce ) {
+	list( $file, $alt ) = $voce;
+	$id = $carica( $dir . ( 0 === strpos( $file, 'valleydor-padel-' ) ? 'galleria/' : '' ) . $file, $alt );
+	if ( false !== strpos( $file, 'torneo-premiazione' ) && ! $torneo ) {
+		$torneo = $id;
+	}
+	$galleria[] = $id;
 }
 $foto( 'corsi.jpg' );
 set_theme_mod( 'galleria_ids', implode( ',', array_filter( $galleria ) ) );
-set_theme_mod( 'sponsor_ids', implode( ',', array_filter( $sponsor ) ) );
+// Sponsor: si usano quelli predefiniti del tema (con nomi e link).
 
 // Tornei di esempio (date relative a oggi).
 $tornei = array(
@@ -71,8 +83,8 @@ foreach ( $tornei as $t ) {
 	update_post_meta( $id, '_vd_categoria', $t[2] );
 	update_post_meta( $id, '_vd_quota', $t[3] );
 	update_post_meta( $id, '_vd_orario', $t[4] );
-	if ( $galleria[2] ) {
-		set_post_thumbnail( $id, $galleria[2] );
+	if ( $torneo ) {
+		set_post_thumbnail( $id, $torneo );
 	}
 }
 

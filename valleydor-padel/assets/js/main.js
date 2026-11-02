@@ -117,17 +117,50 @@
   const items = $$('.gallery__item');
   const lb = $('#lightbox');
   const lbImg = $('img', lb);
+  const lbVideo = $('.lightbox__video', lb);
   let current = 0;
   const show = (i) => {
     current = (i + items.length) % items.length;
-    lbImg.src = items[current].getAttribute('href');
-    lbImg.alt = items[current].dataset.alt || '';
+    const it = items[current];
+    const video = it.dataset.tipo === 'video';
+    // foto o video: si mostra uno dei due
+    lbImg.hidden = video;
+    if (lbVideo) {
+      lbVideo.pause();
+      lbVideo.hidden = !video;
+      if (video) {
+        lbVideo.src = it.getAttribute('href');
+        lbVideo.poster = it.dataset.poster || '';
+        lbVideo.setAttribute('aria-label', it.dataset.alt || 'Video');
+        lbVideo.play().catch(() => {}); // senza audio bloccato: parte al primo tocco
+      } else {
+        lbVideo.removeAttribute('src');
+      }
+    }
+    if (!video) {
+      lbImg.src = it.getAttribute('href');
+      lbImg.alt = it.dataset.alt || '';
+    }
+    const el = video ? lbVideo : lbImg;
     // riavvia l'animazione d'ingresso
-    lbImg.style.animation = 'none'; void lbImg.offsetWidth; lbImg.style.animation = '';
+    el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
   };
   let lastFocus = null;
   const openLb = (i) => { lastFocus = document.activeElement; show(i); lb.hidden = false; document.body.style.overflow = 'hidden'; $('.lightbox__close', lb).focus(); };
-  const closeLb = () => { lb.hidden = true; document.body.style.overflow = ''; (items[current].hidden ? lastFocus : items[current]).focus(); };
+  const closeLb = () => {
+    if (lbVideo) { lbVideo.pause(); lbVideo.removeAttribute('src'); lbVideo.load(); }
+    lb.hidden = true; document.body.style.overflow = ''; (items[current].hidden ? lastFocus : items[current]).focus();
+  };
+
+  /* ---------- video della galleria: partono da soli, senza audio, quando sono visibili ---------- */
+  const anteprime = $$('.gallery__item--video video');
+  if (anteprime.length && 'IntersectionObserver' in window && !reduce) {
+    const vo = new IntersectionObserver(entries => entries.forEach(e => {
+      const v = e.target;
+      if (e.isIntersecting) { v.preload = 'auto'; v.play().catch(() => {}); } else { v.pause(); }
+    }), { threshold: .35 });
+    anteprime.forEach(v => vo.observe(v));
+  }
   items.forEach((a, i) => a.addEventListener('click', (e) => { e.preventDefault(); openLb(i); }));
   $$('[data-open-gallery]').forEach(b => b.addEventListener('click', () => openLb(+b.dataset.openGallery)));
   $('.lightbox__close', lb).addEventListener('click', closeLb);

@@ -7,9 +7,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'VD_VERSION', '1.2.6' );
+define( 'VD_VERSION', '1.3.0' );
 
 require get_template_directory() . '/inc/listini.php';
+require get_template_directory() . '/inc/galleria.php';
+require get_template_directory() . '/inc/sponsor.php';
 require get_template_directory() . '/inc/tornei.php';
 require get_template_directory() . '/inc/pannello.php';
 require get_template_directory() . '/inc/accesso.php';
@@ -93,10 +95,10 @@ function vd_defaults() {
 		'clinic_locali'   => "Fuori dagli allenamenti si gioca sul serio: organizziamo partite con i giocatori del posto, per mettere subito in pratica quello che hai imparato e conoscere la community di Valley d'Or.",
 		'clinic_alloggi'  => 'Arrivi da fuori? Non devi cercare niente: ti aiutiamo noi a trovare la sistemazione giusta vicino al centro, in base al gruppo e al budget. Tu pensi solo al padel.',
 		'clinic_finale'   => 'Raduna il tuo gruppo: clinic, partite e alloggio, ti prepariamo noi un preventivo su misura.',
-		'clinic_img'      => $img . 'campo-1.jpg',
+		'clinic_img'      => $img . 'galleria/valleydor-padel-valledoria-campi-illuminati-tramonto.jpg',
 		'hero_luogo'  => 'La Ciaccia · Valledoria · Sardegna',
 		'hero_testo'  => "Due campi panoramici, istruttori federali e tornei tutto l'anno. Scegli l'orario, porta gli amici: al resto pensiamo noi.",
-		'hero_img'    => $img . 'notte-1.jpg',
+		'hero_img'    => $img . 'galleria/valleydor-padel-valledoria-vista-aerea-club-mare.jpg',
 		// Prezzi e corsi della versione 1.1: valori iniziali dei listini (inc/listini.php)
 		'prezzo_60'   => '32',
 		'prezzo_90'   => '48',
@@ -111,16 +113,13 @@ function vd_defaults() {
 		'lez_3'       => '',
 		'all_1'       => '',
 		'all_2'       => '',
-		'cta_img'     => $img . 'notte-2.jpg',
+		'cta_img'     => $img . 'galleria/valleydor-padel-valledoria-tramonto-sardegna.jpg',
 		// Foto scelte dal pannello (ID della libreria media, separati da virgola)
 		'galleria_ids' => '',
 		'sponsor_ids'  => '',
 	);
 
-	$galleria = array( 'notte-2', 'campo-1', 'torneo-1', 'torneo-2', 'foto-6', 'campo-2', 'foto-3', 'foto-4', 'foto-5' );
-	foreach ( $galleria as $i => $nome ) {
-		$d[ 'galleria_' . ( $i + 1 ) ] = $img . $nome . '.jpg';
-	}
+	// La galleria predefinita è in inc/galleria.php (foto e video).
 	for ( $i = 1; $i <= 12; $i++ ) {
 		$d[ 'sponsor_' . $i ] = $img . 'sponsor-' . $i . '.jpg';
 	}
@@ -144,31 +143,62 @@ function vd( $key ) {
 function vd_foto( $tipo ) {
 	$foto = array();
 	foreach ( vd_ids( vd( $tipo . '_ids' ) ) as $id ) {
+		$alt = get_post_meta( $id, '_wp_attachment_image_alt', true );
+		$alt = $alt ? $alt : get_the_title( $id );
+
+		// Video della libreria (solo in galleria): anteprima = immagine in evidenza, se c'è.
+		if ( 'galleria' === $tipo && wp_attachment_is( 'video', $id ) ) {
+			$url  = wp_get_attachment_url( $id );
+			$meta = wp_get_attachment_metadata( $id );
+			if ( ! $url ) {
+				continue;
+			}
+			$poster = get_the_post_thumbnail_url( $id, 'large' );
+			$foto[] = array(
+				'id'        => $id,
+				'tipo'      => 'video',
+				'full'      => $url,
+				'thumb'     => $poster ? $poster : '',
+				'poster'    => $poster ? $poster : '',
+				'alt'       => $alt,
+				'verticale' => ! empty( $meta['height'] ) && ! empty( $meta['width'] ) && $meta['height'] > $meta['width'],
+			);
+			continue;
+		}
+
 		$full = wp_get_attachment_image_url( $id, 'full' );
 		if ( ! $full ) {
 			continue;
 		}
-		$alt    = get_post_meta( $id, '_wp_attachment_image_alt', true );
+		$meta   = wp_get_attachment_metadata( $id );
 		$foto[] = array(
-			'id'    => $id,
-			'full'  => $full,
-			'thumb' => wp_get_attachment_image_url( $id, 'sponsor' === $tipo ? 'medium_large' : 'large' ),
-			'alt'   => $alt ? $alt : get_the_title( $id ),
+			'id'        => $id,
+			'tipo'      => 'foto',
+			'full'      => $full,
+			'thumb'     => wp_get_attachment_image_url( $id, 'sponsor' === $tipo ? 'medium_large' : 'large' ),
+			'poster'    => '',
+			'alt'       => $alt,
+			'verticale' => ! empty( $meta['height'] ) && ! empty( $meta['width'] ) && $meta['height'] > $meta['width'],
 		);
 	}
 	if ( $foto ) {
 		return $foto;
 	}
 
-	$max = 'sponsor' === $tipo ? 12 : 9;
-	for ( $i = 1; $i <= $max; $i++ ) {
+	if ( 'galleria' === $tipo ) {
+		return vd_galleria_predefinita();
+	}
+	for ( $i = 1; $i <= 12; $i++ ) {
 		$url = vd( $tipo . '_' . $i );
 		if ( $url ) {
 			$foto[] = array(
-				'id'    => 0,
-				'full'  => $url,
-				'thumb' => $url,
-				'alt'   => 'sponsor' === $tipo ? 'Sponsor' : "Il centro Valley d'Or",
+				'id'        => 0,
+				'tipo'      => 'foto',
+				'full'      => $url,
+				'thumb'     => $url,
+				'poster'    => '',
+				'alt'       => 'Sponsor',
+				'verticale' => false,
 			);
 		}
 	}

@@ -11,9 +11,25 @@ $freccia   = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6
 
 // Galleria e sponsor: foto scelte nel pannello, o quelle predefinite del tema.
 $galleria = vd_foto( 'galleria' );
-$sponsor  = vd_foto( 'sponsor' );
-$formati  = array( 'gallery__item--wide', 'gallery__item--tall', '', '', '', '', '', '', 'gallery__item--wide' );
-$in_home  = 9; // foto visibili nella griglia; le altre si aprono con "Vedi tutte"
+$sponsor  = vd_sponsor_visibili();
+// Forma di ogni riquadro: la prima voce larga (2 colonne), le verticali alte (2 righe).
+// In home si riempie una griglia 4×4 (16 caselle); le altre voci si aprono con "Vedi tutte".
+$forme   = array();
+$in_home = 0;
+$caselle = 0;
+foreach ( $galleria as $i => $f ) {
+	$forma = ! empty( $f['verticale'] ) ? 'gallery__item--tall' : ( 0 === $i ? 'gallery__item--wide' : '' );
+	$conta = $forma ? 2 : 1;
+	if ( $caselle + $conta > 16 ) {
+		break;
+	}
+	$forme[]  = $forma;
+	$caselle += $conta;
+	$in_home++;
+	if ( 16 === $caselle ) {
+		break;
+	}
+}
 
 $tornei = vd_tornei_prossimi( 3 );
 
@@ -52,7 +68,7 @@ foreach ( $tariffe as $t ) {
 	<!-- ============ APERTURA ============ -->
 	<section class="hero">
 		<div class="hero__bg" data-parallax="0.25">
-			<img src="<?php echo esc_url( vd( 'hero_img' ) ); ?>" alt="Vista aerea dei campi Valley d'Or con il mare sullo sfondo">
+			<img src="<?php echo esc_url( vd( 'hero_img' ) ); ?>" alt="Vista aerea del Valley d'Or Padel di Valledoria con il mare sullo sfondo">
 		</div>
 		<div class="hero__shade"></div>
 
@@ -383,19 +399,30 @@ foreach ( $tariffe as $t ) {
 
 			<div class="gallery">
 				<?php foreach ( $galleria as $i => $f ) : ?>
+					<?php
+					$video = 'video' === $f['tipo'];
+					$dati  = 'data-tipo="' . esc_attr( $f['tipo'] ) . '" data-alt="' . esc_attr( $f['alt'] ) . '"' . ( $f['poster'] ? ' data-poster="' . esc_url( $f['poster'] ) . '"' : '' );
+					?>
 					<?php if ( $i < $in_home ) : ?>
-						<a href="<?php echo esc_url( $f['full'] ); ?>" class="gallery__item <?php echo esc_attr( $formati[ $i ] ); ?> reveal" data-alt="<?php echo esc_attr( $f['alt'] ); ?>">
-							<img src="<?php echo esc_url( $f['thumb'] ); ?>" alt="<?php echo esc_attr( $f['alt'] ); ?>" loading="lazy">
+						<a href="<?php echo esc_url( $f['full'] ); ?>" class="gallery__item <?php echo esc_attr( $forme[ $i ] . ( $video ? ' gallery__item--video' : '' ) ); ?> reveal" <?php echo $dati; // phpcs:ignore -- escapato sopra ?>>
+							<?php if ( $video ) : ?>
+								<video src="<?php echo esc_url( $f['full'] ); ?>"<?php echo $f['poster'] ? ' poster="' . esc_url( $f['poster'] ) . '"' : ''; ?> muted loop playsinline preload="<?php echo $f['poster'] ? 'none' : 'metadata'; ?>" aria-hidden="true"></video>
+								<span class="gallery__play" aria-hidden="true"></span>
+								<span class="sr-only">Guarda il video: <?php echo esc_html( $f['alt'] ); ?></span>
+							<?php else : ?>
+								<img src="<?php echo esc_url( $f['thumb'] ); ?>" alt="<?php echo esc_attr( $f['alt'] ); ?>" loading="lazy">
+							<?php endif; ?>
 						</a>
 					<?php else : ?>
-						<a href="<?php echo esc_url( $f['full'] ); ?>" class="gallery__item gallery__item--extra" data-alt="<?php echo esc_attr( $f['alt'] ); ?>" hidden></a>
+						<a href="<?php echo esc_url( $f['full'] ); ?>" class="gallery__item gallery__item--extra" <?php echo $dati; // phpcs:ignore -- escapato sopra ?> hidden></a>
 					<?php endif; ?>
 				<?php endforeach; ?>
 			</div>
 
 			<?php if ( count( $galleria ) > $in_home ) : ?>
+				<?php $con_video = in_array( 'video', wp_list_pluck( $galleria, 'tipo' ), true ); ?>
 				<p class="gallery__more reveal">
-					<button type="button" class="btn btn--ghost-dark" data-open-gallery="<?php echo (int) $in_home; ?>">Vedi tutte le <?php echo (int) count( $galleria ); ?> foto</button>
+					<button type="button" class="btn btn--ghost-dark" data-open-gallery="<?php echo (int) $in_home; ?>">Vedi tutte: <?php echo (int) count( $galleria ); ?> <?php echo $con_video ? 'foto e video' : 'foto'; ?></button>
 				</p>
 			<?php endif; ?>
 		</div>
@@ -404,16 +431,30 @@ foreach ( $tariffe as $t ) {
 
 	<!-- ============ SPONSOR ============ -->
 	<?php if ( $sponsor ) : ?>
-	<section class="sponsors" aria-labelledby="sponsor-title">
+	<section class="sponsors" id="sponsor" aria-labelledby="sponsor-title">
 		<div class="wrap">
-			<p class="eyebrow eyebrow--center" id="sponsor-title">I nostri sponsor</p>
-		</div>
-		<div class="sponsors__rail">
-			<div class="sponsors__track" id="sponsorTrack">
-				<?php foreach ( $sponsor as $f ) : ?>
-					<img src="<?php echo esc_url( $f['thumb'] ); ?>" alt="<?php echo esc_attr( $f['alt'] ); ?>" loading="lazy">
-				<?php endforeach; ?>
+			<div class="section__head section__head--center reveal">
+				<p class="eyebrow eyebrow--center">I nostri sponsor</p>
+				<h2 id="sponsor-title">Grazie a chi <em>gioca</em> con noi.</h2>
 			</div>
+			<ul class="sponsors__list">
+				<?php foreach ( $sponsor as $s ) : ?>
+					<?php
+					$img = vd_sponsor_img( $s );
+					$alt = $s['nome'] ? $s['nome'] : 'Sponsor';
+					?>
+					<li class="sponsor reveal">
+						<?php if ( $s['link'] ) : ?>
+							<a href="<?php echo esc_url( $s['link'] ); ?>" target="_blank" rel="noopener sponsored" aria-label="<?php echo esc_attr( $alt ); ?> (si apre il sito)">
+								<img src="<?php echo esc_url( $img ); ?>" alt="<?php echo esc_attr( $alt ); ?>" loading="lazy">
+								<span class="sponsor__vai" aria-hidden="true">Visita il sito ↗</span>
+							</a>
+						<?php else : ?>
+							<img src="<?php echo esc_url( $img ); ?>" alt="<?php echo esc_attr( $alt ); ?>" loading="lazy">
+						<?php endif; ?>
+					</li>
+				<?php endforeach; ?>
+			</ul>
 		</div>
 	</section>
 	<?php endif; ?>
