@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'VD_VERSION', '1.2.3' );
+define( 'VD_VERSION', '1.2.4' );
 
 require get_template_directory() . '/inc/listini.php';
 require get_template_directory() . '/inc/tornei.php';
@@ -76,6 +76,23 @@ function vd_defaults() {
 		'promo_etichetta' => 'Novità',
 		'promo_sotto'     => 'Scopri di più',
 		'promo_link'      => '',
+		'promo_finestra'  => '1', // al clic apre la finestra della Clinic invece del link
+		// Finestra "Padel Clinic"
+		'clinic_titolo'   => 'Padel Clinic',
+		'clinic_slogan'   => 'Vivi il padel, migliora il tuo gioco.',
+		'clinic_intro'    => "Una vacanza di padel in Sardegna, a 100 metri dal mare, pensata per chi arriva da fuori: tu porti la voglia di giocare, al resto pensiamo noi. Tecnica, tattica e tanta pratica in campo, seguiti passo passo da un istruttore federale, per tornare a casa con un gioco nuovo.",
+		'clinic_giorni'   => '4-7',
+		'clinic_ore'      => '4',
+		'clinic_mattina'  => '2 ore in campo: tecnica e colpi',
+		'clinic_sera'     => '2 ore in campo: tattica e gioco',
+		'clinic_mesi'     => 'Maggio, Giugno, Settembre, Ottobre',
+		'clinic_prezzo'   => '400',
+		'clinic_prezzo_nota' => 'a persona · clinic di 4 giorni',
+		'clinic_inclusi'  => "Da 4 a 7 giorni di clinic\n4 ore di allenamento al giorno\nIstruttore federale sempre con voi\nPartite con i giocatori del posto\nTi troviamo noi l'alloggio\nGruppi da almeno 4 partecipanti\n-Costo dell'alloggio a parte",
+		'clinic_locali'   => "Fuori dagli allenamenti si gioca sul serio: organizziamo partite con i giocatori del posto, per mettere subito in pratica quello che hai imparato e conoscere la community di Valley d'Or.",
+		'clinic_alloggi'  => 'Arrivi da fuori? Non devi cercare niente: ti aiutiamo noi a trovare la sistemazione giusta vicino al centro, in base al gruppo e al budget. Tu pensi solo al padel.',
+		'clinic_finale'   => 'Raduna il tuo gruppo: clinic, partite e alloggio, ti prepariamo noi un preventivo su misura.',
+		'clinic_img'      => $img . 'campo-1.jpg',
 		'hero_luogo'  => 'La Ciaccia · Valledoria · Sardegna',
 		'hero_testo'  => "Due campi panoramici, istruttori federali e tornei tutto l'anno. Scegli l'orario, porta gli amici: al resto pensiamo noi.",
 		'hero_img'    => $img . 'notte-1.jpg',

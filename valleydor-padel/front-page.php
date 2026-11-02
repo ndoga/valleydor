@@ -98,7 +98,7 @@ foreach ( $tariffe as $t ) {
 				$promo_link  = vd( 'promo_link' ) ? vd( 'promo_link' ) : $whatsapp . '?text=' . rawurlencode( 'Ciao, vorrei informazioni su: ' . vd( 'promo_testo' ) );
 				$promo_fuori = 0 !== strpos( $promo_link, '#' );
 				?>
-				<a href="<?php echo esc_url( $promo_link ); ?>" class="promo" <?php echo $promo_fuori ? 'target="_blank" rel="noopener"' : ''; ?>>
+				<a href="<?php echo esc_url( $promo_link ); ?>" class="promo" <?php echo $promo_fuori ? 'target="_blank" rel="noopener"' : ''; ?><?php echo vd( 'promo_finestra' ) ? ' data-finestra="clinic" aria-haspopup="dialog"' : ''; ?>>
 					<?php if ( vd( 'promo_etichetta' ) ) : ?>
 						<span class="promo__tag"><span><?php echo esc_html( vd( 'promo_etichetta' ) ); ?></span></span>
 					<?php endif; ?>
@@ -480,4 +480,7 @@ foreach ( $tariffe as $t ) {
 </main>
 
 <?php
+if ( vd( 'promo_attiva' ) && vd( 'promo_finestra' ) ) {
+	get_template_part( 'parti/clinic' );
+}
 get_footer();

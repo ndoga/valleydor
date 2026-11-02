@@ -64,6 +64,14 @@ add_action( 'admin_post_vd_salva', function () {
 				set_theme_mod( $key, sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) );
 			}
 		}
+		set_theme_mod( 'promo_finestra', empty( $_POST['promo_finestra'] ) ? '' : '1' );
+		$righe_lunghe = array( 'clinic_intro', 'clinic_inclusi', 'clinic_locali', 'clinic_alloggi', 'clinic_finale' );
+		foreach ( array( 'clinic_titolo', 'clinic_slogan', 'clinic_giorni', 'clinic_ore', 'clinic_mattina', 'clinic_sera', 'clinic_mesi', 'clinic_prezzo', 'clinic_prezzo_nota', 'clinic_intro', 'clinic_inclusi', 'clinic_locali', 'clinic_alloggi', 'clinic_finale' ) as $key ) {
+			if ( isset( $_POST[ $key ] ) ) {
+				$val = wp_unslash( $_POST[ $key ] ); // phpcs:ignore -- ripulito sotto
+				set_theme_mod( $key, in_array( $key, $righe_lunghe, true ) ? sanitize_textarea_field( $val ) : sanitize_text_field( $val ) );
+			}
+		}
 		if ( isset( $_POST['promo_link'] ) ) {
 			$link = trim( wp_unslash( $_POST['promo_link'] ) ); // phpcs:ignore -- ripulito sotto
 			set_theme_mod( 'promo_link', 0 === strpos( $link, '#' ) ? '#' . sanitize_key( substr( $link, 1 ) ) : esc_url_raw( $link ) );
@@ -95,6 +103,17 @@ function vd_campo( $nome, $label, $valore, $classe = '', $attr = '' ) {
 		esc_attr( $nome ),
 		esc_attr( $valore ),
 		$attr // phpcs:ignore -- attributi fissi scritti nel codice
+	);
+}
+
+/** Area di testo su tutta la riga. */
+function vd_area( $nome, $label, $valore, $righe = 3 ) {
+	printf(
+		'<label class="vd-f vd-f--wide"><span>%1$s</span><textarea name="%2$s" rows="%3$d">%4$s</textarea></label>',
+		esc_html( $label ),
+		esc_attr( $nome ),
+		(int) $righe,
+		esc_textarea( $valore )
 	);
 }
 
@@ -326,6 +345,31 @@ function vd_pannello_pagina() {
 							<span class="vd-toggle__ui" aria-hidden="true"></span> Visibile
 						</label>
 					</div>
+				</div>
+			</section>
+
+			<section class="vd-card">
+				<h2><span class="dashicons dashicons-format-aside"></span> Finestra della novità</h2>
+				<p class="vd-help">Si apre toccando il pulsante in evidenza. Se la spegni, il pulsante usa il link indicato sopra.</p>
+				<label class="vd-toggle vd-toggle--riga">
+					<input type="checkbox" name="promo_finestra" value="1" <?php checked( (bool) vd( 'promo_finestra' ) ); ?>>
+					<span class="vd-toggle__ui" aria-hidden="true"></span> Al clic apri la finestra
+				</label>
+				<div class="vd-grid-campi">
+					<?php vd_campo( 'clinic_titolo', 'Titolo', vd( 'clinic_titolo' ), 'vd-f--nome', 'placeholder="Padel Clinic"' ); ?>
+					<?php vd_campo( 'clinic_slogan', 'Frase sotto il titolo', vd( 'clinic_slogan' ), 'vd-f--due' ); ?>
+					<?php vd_area( 'clinic_intro', 'Presentazione', vd( 'clinic_intro' ), 3 ); ?>
+					<?php vd_campo( 'clinic_giorni', 'Giorni', vd( 'clinic_giorni' ), '', 'placeholder="es. 4-7"' ); ?>
+					<?php vd_campo( 'clinic_ore', 'Ore al giorno', vd( 'clinic_ore' ), '', 'placeholder="4"' ); ?>
+					<?php vd_campo( 'clinic_mattina', 'Mattina', vd( 'clinic_mattina' ), '' ); ?>
+					<?php vd_campo( 'clinic_sera', 'Sera', vd( 'clinic_sera' ), '' ); ?>
+					<?php vd_campo( 'clinic_mesi', 'Mesi (separati da virgola)', vd( 'clinic_mesi' ), 'vd-f--due', 'placeholder="Maggio, Giugno, Settembre, Ottobre"' ); ?>
+					<?php vd_campo_euro( 'clinic_prezzo', 'Prezzo "da"', vd( 'clinic_prezzo' ), '400' ); ?>
+					<?php vd_campo( 'clinic_prezzo_nota', 'Sotto il prezzo', vd( 'clinic_prezzo_nota' ), 'vd-f--due' ); ?>
+					<?php vd_area( 'clinic_inclusi', 'Cosa comprende (una riga per voce; inizia con - per "non incluso")', vd( 'clinic_inclusi' ), 5 ); ?>
+					<?php vd_area( 'clinic_locali', 'Partite con i giocatori del posto (vuoto = non compare)', vd( 'clinic_locali' ), 2 ); ?>
+					<?php vd_area( 'clinic_alloggi', 'Alloggio: lo troviamo noi (vuoto = non compare)', vd( 'clinic_alloggi' ), 2 ); ?>
+					<?php vd_area( 'clinic_finale', 'Frase finale, vicino ai pulsanti', vd( 'clinic_finale' ), 2 ); ?>
 				</div>
 			</section>
 

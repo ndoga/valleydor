@@ -154,6 +154,27 @@
   const year = $('#year');
   if (year) year.textContent = new Date().getFullYear();
 
+  /* ---------- finestra della novità (es. Padel Clinic) ---------- */
+  $$('[data-finestra]').forEach(btn => {
+    const dlg = document.getElementById(btn.dataset.finestra);
+    if (!dlg || typeof dlg.showModal !== 'function') return; // senza supporto resta il link normale
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      dlg.showModal();
+      document.body.style.overflow = 'hidden';
+      dlg.querySelector('.clinic__box').scrollTop = 0;
+    });
+    const chiudi = () => {
+      dlg.classList.add('is-closing');
+      setTimeout(() => { dlg.classList.remove('is-closing'); dlg.close(); }, reduce ? 0 : 220);
+    };
+    $$('[data-chiudi]', dlg).forEach(b => b.addEventListener('click', chiudi));
+    // clic sullo sfondo scuro, fuori dal riquadro
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) chiudi(); });
+    dlg.addEventListener('cancel', (e) => { e.preventDefault(); chiudi(); });
+    dlg.addEventListener('close', () => { document.body.style.overflow = ''; btn.focus(); });
+  });
+
   /* ---------- ciclo di scorrimento ---------- */
   let ticking = false;
   window.addEventListener('scroll', () => {

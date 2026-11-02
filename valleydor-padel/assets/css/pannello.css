@@ -384,3 +384,16 @@
 
 /* nome del corso su tutta la riga: i titoli lunghi non vanno tagliati */
 .vd-row--corso > .vd-row__fields > .vd-f--nome { grid-column: 1 / -1; max-width: 560px; }
+
+/* finestra della novità */
+.vd-toggle--riga { margin: 4px 0 18px; }
+.vd-grid-campi {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px 16px;
+}
+.vd-grid-campi .vd-f--nome,
+.vd-grid-campi .vd-f--due { grid-column: span 2; }
+@media (max-width: 960px) {
+  .vd-grid-campi { grid-template-columns: 1fr 1fr; }
+}
