@@ -271,7 +271,6 @@ foreach ( $tariffe as $t ) {
 		<div class="wrap corsi">
 			<div class="corsi__media reveal">
 				<img src="<?php echo esc_url( vd( 'corsi_img' ) ); ?>" alt="Istruttore federale Valley d'Or" loading="lazy">
-				<div class="corsi__badge"><strong>FITP</strong><span>Istruttori federali</span></div>
 			</div>
 
 			<div class="corsi__body">

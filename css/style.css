@@ -496,18 +496,7 @@ h3 { font-size: 1.35rem; font-weight: 700; }
   border-radius: var(--radius);
   z-index: -1;
 }
-.corsi__badge {
-  position: absolute;
-  left: -20px; bottom: 40px;
-  padding: 18px 24px;
-  border-radius: 18px;
-  background: var(--ink);
-  color: var(--white);
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, .5);
-  animation: float 5s ease-in-out infinite;
-}
-.corsi__badge strong { display: block; font-family: var(--font-head); font-size: 2rem; line-height: 1; color: var(--lime); }
-.corsi__badge span { font-size: .9rem; font-weight: 600; }
+
 @keyframes float { 50% { transform: translateY(-12px); } }
 
 .accordion { display: grid; gap: 12px; margin-bottom: 36px; }
@@ -748,7 +737,6 @@ h3 { font-size: 1.35rem; font-weight: 700; }
 
   .corsi, .dove { grid-template-columns: 1fr; }
   .corsi__media { max-width: 460px; margin-right: 24px; }
-  .corsi__badge { left: 16px; }
   .ball { width: 44px; height: 44px; right: 8%; bottom: 14%; }
   .ball::before, .ball::after { inset: 4px; border-width: 2px; }
 
