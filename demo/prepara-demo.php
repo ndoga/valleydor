@@ -3,8 +3,9 @@
  * Prepara la demo su WordPress Playground (eseguito dal passo runPHP di demo/blueprint.json,
  * che è generato da demo/genera-blueprint.py: modificare questo file e rigenerare).
  *
- * Crea l'utente "gestore" (ruolo Gestore del centro), carica le foto del tema nella
- * libreria media per la galleria, aggiunge tre tornei di esempio.
+ * Crea l'utente "gestore" (ruolo Gestore del centro) e ricrea la configurazione del sito
+ * esportata in demo/dati.json (demo/esporta-dal-sito.php): impostazioni del tema, galleria,
+ * sponsor, tornei e foto caricate a mano (scaricate da Playground in /wordpress/wp-content/vd-demo/).
  * Tutto vive solo nel browser di chi apre la demo e sparisce chiudendo la scheda.
  */
 require '/wordpress/wp-load.php';
@@ -34,13 +35,22 @@ if ( ! get_user_by( 'login', 'gestore' ) ) {
 	) );
 }
 
-// Foto del tema nella libreria media (stesso elenco della galleria predefinita).
-$dir    = get_template_directory() . '/assets/img/';
-$carica = function ( $percorso, $alt = '' ) {
+$cartella = WP_CONTENT_DIR . '/vd-demo/';
+$dati     = json_decode( (string) @file_get_contents( $cartella . 'dati.json' ), true );
+if ( ! is_array( $dati ) ) {
+	$dati = array();
+}
+$dati = array_merge( array( 'mods' => array(), 'galleria' => array(), 'tornei' => array(), 'media' => array() ), $dati );
+
+// Carica un file nella libreria media.
+$carica = function ( $percorso, $alt = '', $titolo = '' ) {
+	if ( ! file_exists( $percorso ) ) {
+		return 0;
+	}
 	$nome = basename( $percorso );
 	$tmp  = wp_tempnam( $nome );
 	copy( $percorso, $tmp );
-	$id = media_handle_sideload( array( 'name' => $nome, 'tmp_name' => $tmp ), 0 );
+	$id = media_handle_sideload( array( 'name' => $nome, 'tmp_name' => $tmp ), 0, $titolo ? $titolo : null );
 	if ( is_wp_error( $id ) ) {
 		return 0;
 	}
@@ -49,42 +59,107 @@ $carica = function ( $percorso, $alt = '' ) {
 	}
 	return $id;
 };
-$foto = function ( $nome ) use ( $carica, $dir ) {
-	return $carica( $dir . $nome );
-};
-$galleria = array();
-$torneo   = 0;
-foreach ( vd_galleria_elenco() as $voce ) {
-	list( $file, $alt ) = $voce;
-	$id = $carica( $dir . ( 0 === strpos( $file, 'valleydor-padel-' ) ? 'galleria/' : '' ) . $file, $alt );
-	if ( false !== strpos( $file, 'torneo-premiazione' ) && ! $torneo ) {
-		$torneo = $id;
-	}
-	$galleria[] = $id;
-}
-$foto( 'corsi.jpg' );
-set_theme_mod( 'galleria_ids', implode( ',', array_filter( $galleria ) ) );
-// Sponsor: si usano quelli predefiniti del tema (con nomi e link).
 
-// Tornei di esempio (date relative a oggi).
-$tornei = array(
-	array( 'Torneo del weekend', '+12 days', 'Doppio misto', '20 € a coppia', 'dalle 9:00', 'Due giorni di padel a 100 metri dal mare. Premi per le prime tre coppie e grigliata finale per tutti.' ),
-	array( "Coppa Valley d'Or", '+30 days', 'Doppio maschile', '25 € a coppia', 'dalle 10:00', 'Il torneo storico del centro: tabellone a eliminazione diretta, finale in notturna.' ),
-	array( 'Torneo rosa', '+50 days', 'Doppio femminile', '15 € a coppia', '', 'Torneo dedicato alle giocatrici di tutti i livelli, con gironi e tabellone finale.' ),
-);
+$img_tema = get_template_directory() . '/assets/img/';
+$ids_tema = array(); // nome file del tema => id nella libreria
+$media    = array(); // nome file in vd-demo => id nella libreria
+
+// Voce dell'esportazione ({tema|media, alt}) → id nella libreria, senza doppioni.
+$importa = function ( $v ) use ( $carica, $img_tema, $cartella, &$ids_tema, &$media ) {
+	$alt = isset( $v['alt'] ) ? $v['alt'] : '';
+	if ( ! empty( $v['tema'] ) ) {
+		$f = $v['tema'];
+		if ( ! isset( $ids_tema[ $f ] ) ) {
+			$sotto          = 0 === strpos( $f, 'valleydor-padel-' ) ? 'galleria/' : '';
+			$ids_tema[ $f ] = $carica( $img_tema . $sotto . $f, $alt );
+			if ( $ids_tema[ $f ] ) {
+				update_post_meta( $ids_tema[ $f ], '_vd_origine', $f );
+			}
+		}
+		return $ids_tema[ $f ];
+	}
+	if ( ! empty( $v['media'] ) ) {
+		$f = $v['media'];
+		if ( ! isset( $media[ $f ] ) ) {
+			$media[ $f ] = $carica( $cartella . $f, $alt, isset( $v['titolo'] ) ? $v['titolo'] : '' );
+		}
+		return $media[ $f ];
+	}
+	return 0;
+};
+
+// Galleria nell'ordine esportato (senza esportazione: quella predefinita del tema).
+$elenco_galleria = $dati['galleria'];
+if ( ! $elenco_galleria ) {
+	foreach ( vd_galleria_elenco() as $voce ) {
+		$elenco_galleria[] = array( 'tema' => $voce[0], 'alt' => $voce[1] );
+	}
+}
+$galleria = array();
+foreach ( $elenco_galleria as $v ) {
+	$id = $importa( $v );
+	if ( $id ) {
+		$galleria[] = $id;
+	}
+}
+set_theme_mod( 'galleria_ids', implode( ',', $galleria ) );
+
+// Foto caricate a mano usate nelle impostazioni (es. foto dell'istruttore).
+foreach ( $dati['media'] as $f ) {
+	$importa( array( 'media' => $f ) );
+}
+
+// Impostazioni del tema: segnaposto {tema} e {media:file} → indirizzi della demo.
+$tema_url    = get_template_directory_uri() . '/';
+$sostituisci = function ( $v ) use ( &$sostituisci, $tema_url, &$media ) {
+	if ( is_array( $v ) ) {
+		return array_map( $sostituisci, $v );
+	}
+	if ( ! is_string( $v ) ) {
+		return $v;
+	}
+	$v = str_replace( '{tema}', $tema_url, $v );
+	return preg_replace_callback( '/\{media:([^}]+)\}/', function ( $m ) use ( &$media ) {
+		return ! empty( $media[ $m[1] ] ) ? wp_get_attachment_url( $media[ $m[1] ] ) : '';
+	}, $v );
+};
+foreach ( $dati['mods'] as $k => $v ) {
+	set_theme_mod( $k, $sostituisci( $v ) );
+}
+
+// Tornei: quelli esportati; senza esportazione, tre di esempio con date future.
+$tornei = $dati['tornei'];
+if ( ! $tornei ) {
+	foreach ( array(
+		array( 'Torneo del weekend', '+12 days', 'Doppio misto', '20 € a coppia' ),
+		array( "Coppa Valley d'Or", '+30 days', 'Doppio maschile', '25 € a coppia' ),
+		array( 'Torneo rosa', '+50 days', 'Doppio femminile', '15 € a coppia' ),
+	) as $t ) {
+		$tornei[] = array(
+			'titolo' => $t[0],
+			'meta'   => array( '_vd_data' => wp_date( 'Y-m-d', strtotime( $t[1] ) ), '_vd_categoria' => $t[2], '_vd_quota' => $t[3] ),
+		);
+	}
+}
 foreach ( $tornei as $t ) {
 	$id = wp_insert_post( array(
 		'post_type'    => 'torneo',
 		'post_status'  => 'publish',
-		'post_title'   => $t[0],
-		'post_content' => $t[5],
+		'post_title'   => $t['titolo'],
+		'post_content' => isset( $t['testo'] ) ? $t['testo'] : '',
+		'post_excerpt' => isset( $t['riassunto'] ) ? $t['riassunto'] : '',
 	) );
-	update_post_meta( $id, '_vd_data', wp_date( 'Y-m-d', strtotime( $t[1] ) ) );
-	update_post_meta( $id, '_vd_categoria', $t[2] );
-	update_post_meta( $id, '_vd_quota', $t[3] );
-	update_post_meta( $id, '_vd_orario', $t[4] );
-	if ( $torneo ) {
-		set_post_thumbnail( $id, $torneo );
+	if ( ! $id || is_wp_error( $id ) ) {
+		continue;
+	}
+	foreach ( $t['meta'] as $k => $v ) {
+		update_post_meta( $id, $k, $v );
+	}
+	if ( ! empty( $t['foto'] ) ) {
+		$foto = $importa( $t['foto'] );
+		if ( $foto ) {
+			set_post_thumbnail( $id, $foto );
+		}
 	}
 }
 

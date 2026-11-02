@@ -1,0 +1,407 @@
+{
+    "esportato": "2026-11-02 23:00",
+    "sito": {
+        "nome": "Valley d&#039;Or",
+        "descrizione": ""
+    },
+    "mods": {
+        "prezzo_60": "36",
+        "prezzo_90": "48",
+        "palline": "7,50",
+        "racchetta": "2,50",
+        "overgrip": "2,50",
+        "lez_1": "35 € / ora",
+        "lez_2": "25 € a testa",
+        "lez_3": "",
+        "all_1": "",
+        "all_2": "",
+        "junior": "100",
+        "orari": "Tutti i giorni, dalle 8:00 alle 23:00",
+        "tariffe": [
+            {
+                "nome": "1 ora e 30",
+                "prezzo": "48",
+                "offerta": "",
+                "persone": "4",
+                "note": "Disdetta entro 24h\r\nCampo panoramico",
+                "descrizione": "",
+                "visibile": true,
+                "evidenza": true,
+                "etichetta": "Più scelto",
+                "righe": []
+            },
+            {
+                "nome": "1 ora",
+                "prezzo": "32",
+                "offerta": "",
+                "persone": "4",
+                "note": "Disdetta entro 24h\r\nCampo panoramico",
+                "descrizione": "",
+                "visibile": true,
+                "evidenza": false,
+                "etichetta": "",
+                "righe": []
+            }
+        ],
+        "extra": [
+            {
+                "nome": "Tubo di palline",
+                "prezzo": "7,50",
+                "offerta": "",
+                "persone": "",
+                "note": "",
+                "descrizione": "",
+                "visibile": true,
+                "evidenza": false,
+                "etichetta": "",
+                "righe": []
+            },
+            {
+                "nome": "Noleggio racchetta",
+                "prezzo": "2,50",
+                "offerta": "",
+                "persone": "",
+                "note": "",
+                "descrizione": "",
+                "visibile": true,
+                "evidenza": false,
+                "etichetta": "",
+                "righe": []
+            },
+            {
+                "nome": "Overgrip",
+                "prezzo": "3",
+                "offerta": "",
+                "persone": "",
+                "note": "",
+                "descrizione": "",
+                "visibile": true,
+                "evidenza": false,
+                "etichetta": "",
+                "righe": []
+            }
+        ],
+        "corsi": [
+            {
+                "nome": "Lezioni con istruttore federale",
+                "prezzo": "",
+                "offerta": "",
+                "persone": "",
+                "note": "",
+                "descrizione": "Lezioni individuali o di gruppo, per imparare i colpi base o perfezionare la tecnica.",
+                "visibile": true,
+                "evidenza": false,
+                "etichetta": "",
+                "righe": [
+                    {
+                        "chi": "1 persona",
+                        "prezzo": "",
+                        "unita": "/ ora",
+                        "offerta": ""
+                    },
+                    {
+                        "chi": "2 persone",
+                        "prezzo": "",
+                        "unita": "a testa / ora",
+                        "offerta": ""
+                    },
+                    {
+                        "chi": "3 persone",
+                        "prezzo": "",
+                        "unita": "a testa / ora",
+                        "offerta": ""
+                    },
+                    {
+                        "chi": "4 persone",
+                        "prezzo": "",
+                        "unita": "",
+                        "offerta": ""
+                    }
+                ]
+            },
+            {
+                "nome": "Allenamenti personalizzati",
+                "prezzo": "",
+                "offerta": "",
+                "persone": "",
+                "note": "",
+                "descrizione": "Programmi su misura per atleti singoli o coppie che preparano tornei e competizioni.",
+                "visibile": true,
+                "evidenza": false,
+                "etichetta": "",
+                "righe": [
+                    {
+                        "chi": "1 persona",
+                        "prezzo": "",
+                        "unita": "",
+                        "offerta": ""
+                    },
+                    {
+                        "chi": "2 persone",
+                        "prezzo": "",
+                        "unita": "",
+                        "offerta": ""
+                    }
+                ]
+            },
+            {
+                "nome": "Scuola padel junior",
+                "prezzo": "",
+                "offerta": "",
+                "persone": "",
+                "note": "",
+                "descrizione": "Il padel per i più giovani: otto lezioni al mese con istruttore federale.",
+                "visibile": true,
+                "evidenza": false,
+                "etichetta": "",
+                "righe": [
+                    {
+                        "chi": "Al mese",
+                        "prezzo": "",
+                        "unita": "8 lezioni",
+                        "offerta": ""
+                    }
+                ]
+            }
+        ],
+        "promo_attiva": "1",
+        "promo_testo": "Clinic di padel",
+        "promo_etichetta": "Novità",
+        "promo_sotto": "Scopri di più",
+        "promo_link": "",
+        "promo_finestra": "1",
+        "promo_menu": "Clinic",
+        "clinic_titolo": "Padel Clinic",
+        "clinic_slogan": "Vivi il padel, migliora il tuo gioco.",
+        "clinic_giorni": "4-7",
+        "clinic_ore": "4",
+        "clinic_mattina": "2 ore in campo: tecnica e colpi",
+        "clinic_sera": "2 ore in campo: tattica e gioco",
+        "clinic_mesi": "Maggio, Giugno, Settembre, Ottobre",
+        "clinic_prezzo": "400",
+        "clinic_prezzo_nota": "a persona · clinic di 4 giorni",
+        "clinic_intro": "Una vacanza di padel in Sardegna, a 100 metri dal mare, pensata per chi arriva da fuori: tu porti la voglia di giocare, al resto pensiamo noi. Tecnica, tattica e tanta pratica in campo, seguiti passo passo da un istruttore federale, per tornare a casa con un gioco nuovo.",
+        "clinic_inclusi": "Da 4 a 7 giorni di clinic\r\n4 ore di allenamento al giorno\r\nIstruttore federale sempre con voi\r\nPartite con i giocatori del posto\r\nTi troviamo noi l'alloggio\r\nGruppi da almeno 4 partecipanti\r\n-Costo dell'alloggio a parte",
+        "clinic_locali": "Fuori dagli allenamenti si gioca sul serio: organizziamo partite con i giocatori del posto, per mettere subito in pratica quello che hai imparato e conoscere la community di Valley d'Or.",
+        "clinic_alloggi": "Arrivi da fuori? Non devi cercare niente: ti aiutiamo noi a trovare la sistemazione giusta vicino al centro, in base al gruppo e al budget. Tu pensi solo al padel.",
+        "clinic_finale": "Raduna il tuo gruppo: clinic, partite e alloggio, ti prepariamo noi un preventivo su misura.",
+        "corsi_img": "{media:valleydor-alessio-tifp.jpg}",
+        "sponsor": [
+            {
+                "img_id": 0,
+                "img_url": "{tema}assets/img/sponsor-1.jpg",
+                "nome": "Agriturismo Bedda Ista",
+                "link": "",
+                "visibile": false
+            },
+            {
+                "img_id": 0,
+                "img_url": "{tema}assets/img/sponsor-2.jpg",
+                "nome": "GDV s.r.l.",
+                "link": "",
+                "visibile": false
+            },
+            {
+                "img_id": 0,
+                "img_url": "{tema}assets/img/sponsor-3.jpg",
+                "nome": "Ideal Sistem – infissi in PVC",
+                "link": "",
+                "visibile": false
+            },
+            {
+                "img_id": 0,
+                "img_url": "{tema}assets/img/sponsor-4.jpg",
+                "nome": "Maguledda Costruzioni e Immobiliare",
+                "link": "",
+                "visibile": false
+            },
+            {
+                "img_id": 0,
+                "img_url": "{tema}assets/img/sponsor-5.jpg",
+                "nome": "CL Costruzioni",
+                "link": "",
+                "visibile": true
+            },
+            {
+                "img_id": 0,
+                "img_url": "{tema}assets/img/sponsor-6.jpg",
+                "nome": "Homes in Sardinia – vendite immobiliari",
+                "link": "",
+                "visibile": true
+            },
+            {
+                "img_id": 0,
+                "img_url": "{tema}assets/img/sponsor-7.jpg",
+                "nome": "Gomme & Service – Centro revisioni Pala",
+                "link": "",
+                "visibile": true
+            },
+            {
+                "img_id": 0,
+                "img_url": "{tema}assets/img/sponsor-8.jpg",
+                "nome": "Bar Aurelio",
+                "link": "",
+                "visibile": false
+            },
+            {
+                "img_id": 0,
+                "img_url": "{tema}assets/img/sponsor-9.jpg",
+                "nome": "Tenda System – living outdoor design",
+                "link": "",
+                "visibile": true
+            },
+            {
+                "img_id": 0,
+                "img_url": "{tema}assets/img/sponsor-10.jpg",
+                "nome": "STEM Costruzioni",
+                "link": "",
+                "visibile": false
+            },
+            {
+                "img_id": 0,
+                "img_url": "{tema}assets/img/sponsor-11.jpg",
+                "nome": "Ital Home – gruppo agenzie immobiliari",
+                "link": "",
+                "visibile": true
+            },
+            {
+                "img_id": 0,
+                "img_url": "{tema}assets/img/sponsor-12.jpg",
+                "nome": "HB Agency – advertising solution",
+                "link": "",
+                "visibile": true
+            }
+        ]
+    },
+    "galleria": [
+        {
+            "tema": "valleydor-padel-valledoria-campi-padel-sardegna-mare.jpg",
+            "alt": "Due campi da padel affiancati con vista sul mare della Sardegna a Valledoria"
+        },
+        {
+            "tema": "valleydor-padel-valledoria-campi-illuminati-tramonto.jpg",
+            "alt": "Campi da padel illuminati al tramonto al Valley d'Or Padel di Valledoria"
+        },
+        {
+            "tema": "valleydor-padel-valledoria-campo-padel-blu-vista-mare.jpg",
+            "alt": "Campo da padel blu con vista mare al Valley d'Or Padel di Valledoria, Sardegna"
+        },
+        {
+            "tema": "valleydor-padel-valledoria-club-house-dehors.jpg",
+            "alt": "Club house con dehors all'aperto e campi da padel del Valley d'Or Padel, Valledoria"
+        },
+        {
+            "tema": "valleydor-padel-valledoria-due-campi-padel-panoramici.jpg",
+            "alt": "Due campi da padel panoramici con vetrate al Valley d'Or Padel, Valledoria"
+        },
+        {
+            "tema": "valleydor-padel-valledoria-campo-blu-campo-nero.jpg",
+            "alt": "Campo da padel blu e campo nero affiancati al Valley d'Or Padel di Valledoria"
+        },
+        {
+            "tema": "valleydor-padel-valledoria-torneo-premiazione-doppio-misto.jpg",
+            "alt": "Premiazione del torneo di padel doppio misto al Valley d'Or Padel di Valledoria"
+        },
+        {
+            "tema": "valleydor-padel-valledoria-panoramica-club-sul-mare.jpg",
+            "alt": "Panoramica del circolo Valley d'Or Padel di Valledoria affacciato sul mare"
+        },
+        {
+            "tema": "valleydor-padel-valledoria-campo-padel-nero.jpg",
+            "alt": "Campo da padel nero in primo piano e campo blu sullo sfondo, Valley d'Or Padel Valledoria"
+        },
+        {
+            "tema": "valleydor-padel-valledoria-tramonto-sardegna.jpg",
+            "alt": "Tramonto sui campi da padel del Valley d'Or Padel a Valledoria, Sardegna"
+        },
+        {
+            "tema": "valleydor-padel-valledoria-vista-aerea-club-mare.jpg",
+            "alt": "Vista aerea del Valley d'Or Padel di Valledoria con il mare sullo sfondo"
+        },
+        {
+            "tema": "valleydor-padel-valledoria-campi-padel-vista-aerea.jpg",
+            "alt": "Vista aerea dei due campi da padel del Valley d'Or Padel a Valledoria, con il paese sullo sfondo"
+        },
+        {
+            "tema": "valleydor-padel-valledoria-torneo-premiazione-doppio-maschile.jpg",
+            "alt": "Premiazione del torneo di padel doppio maschile al Valley d'Or Padel di Valledoria"
+        },
+        {
+            "tema": "valleydor-padel-valledoria-campi-e-club-house.jpg",
+            "alt": "Campi da padel e club house del Valley d'Or Padel a Valledoria, Sardegna"
+        },
+        {
+            "tema": "valleydor-padel-valledoria-campi-padel-vicino-al-mare.jpg",
+            "alt": "Campi da padel immersi nel verde con il mare all'orizzonte a Valledoria"
+        },
+        {
+            "tema": "valleydor-padel-valledoria-campi-padel-dall-alto.jpg",
+            "alt": "Campi da padel nero e blu ripresi dall'alto al Valley d'Or Padel di Valledoria"
+        },
+        {
+            "tema": "valleydor-padel-valledoria-campi-padel-foto-drone.jpg",
+            "alt": "Foto con drone dall'alto dei campi da padel e della club house a Valledoria"
+        },
+        {
+            "tema": "valleydor-padel-valledoria-campo-padel-e-club-house.jpg",
+            "alt": "Club house e campo da padel nero del Valley d'Or Padel a Valledoria"
+        },
+        {
+            "tema": "valleydor-padel-valledoria-campi-padel-all-aperto.jpg",
+            "alt": "Due campi da padel all'aperto del Valley d'Or Padel a Valledoria"
+        },
+        {
+            "tema": "notte-2.jpg",
+            "alt": "I campi del Valley d'Or visti dal drone"
+        },
+        {
+            "tema": "foto-3.jpg",
+            "alt": "Il centro Valley d'Or"
+        },
+        {
+            "tema": "foto-4.jpg",
+            "alt": "Il centro Valley d'Or"
+        }
+    ],
+    "tornei": [
+        {
+            "titolo": "Torneo di Ferragosto",
+            "testo": "Iscrizioni aperte: due giorni di padel a 100 metri dal mare. Premi per i primi tre classificati.",
+            "riassunto": "",
+            "meta": {
+                "_vd_data": "2025-08-15",
+                "_vd_orario": "dalle 9:00",
+                "_vd_categoria": "Doppio misto",
+                "_vd_quota": "20 € a coppia",
+                "_vd_iscrizioni": ""
+            }
+        },
+        {
+            "titolo": "Coppa Valley d'Or",
+            "testo": "Iscrizioni aperte: due giorni di padel a 100 metri dal mare. Premi per i primi tre classificati.",
+            "riassunto": "",
+            "meta": {
+                "_vd_data": "2024-12-16",
+                "_vd_orario": "",
+                "_vd_categoria": "Doppio maschile",
+                "_vd_quota": "25 € a coppia",
+                "_vd_iscrizioni": ""
+            }
+        },
+        {
+            "titolo": "Torneo d'autunno",
+            "testo": "Iscrizioni aperte: due giorni di padel a 100 metri dal mare. Premi per i primi tre classificati.",
+            "riassunto": "",
+            "meta": {
+                "_vd_data": "2026-10-03",
+                "_vd_orario": "",
+                "_vd_categoria": "Doppio femminile",
+                "_vd_quota": "",
+                "_vd_iscrizioni": ""
+            }
+        }
+    ],
+    "media": [
+        "valleydor-alessio-tifp.jpg"
+    ]
+}

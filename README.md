@@ -17,12 +17,23 @@ due campi panoramici a 100 metri dal mare.
 - il sito (anteprima statica su GitHub Pages);
 - l'area riservata di prova su [WordPress Playground](https://playground.wordpress.net/), che gira nel
   browser: installa il tema dal ramo `main` di questo repository, crea l'utente `gestore` (password
-  `demo`, esiste solo nella demo), carica le foto e alcuni tornei di esempio, e si apre sul pannello.
+  `demo`, esiste solo nella demo), ricrea la configurazione del sito di prova (prezzi, extra, corsi,
+  galleria, sponsor, tornei, testi della Clinic) e si apre sul pannello.
   Le modifiche restano nel browser di chi prova e spariscono chiudendo la pagina.
 
 La ricetta è `demo/blueprint.json`, generata da `demo/genera-blueprint.py` a partire da
 `demo/prepara-demo.php`: per cambiarla modificare il PHP e rigenerare. Ogni push su `main` aggiorna
 anche la demo, perché Playground scarica il tema dal repository a ogni apertura.
+
+Per portare nella demo la configurazione attuale di un WordPress con il tema:
+
+```bash
+php demo/esporta-dal-sito.php C:/percorso/del/wordpress
+python demo/genera-blueprint.py
+```
+
+Il primo comando scrive `demo/dati.json` e copia in `demo/media/` le foto caricate a mano; la demo le
+scarica da GitHub Pages all'avvio.
 
 ## Installare il tema
 

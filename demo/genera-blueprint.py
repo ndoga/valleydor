@@ -9,8 +9,24 @@ import os
 
 QUI = os.path.dirname(os.path.abspath(__file__))
 
+PAGES = 'https://ndoga.github.io/valleydor/demo/'
+DEST = '/wordpress/wp-content/vd-demo/'
+
 with open(os.path.join(QUI, 'prepara-demo.php'), encoding='utf-8') as f:
     prepara = f.read()
+
+# Configurazione esportata dal sito di prova (demo/esporta-dal-sito.php): Playground
+# scarica dati.json e le foto di demo/media da GitHub Pages prima della preparazione.
+scarica = []
+if os.path.exists(os.path.join(QUI, 'dati.json')):
+    with open(os.path.join(QUI, 'dati.json'), encoding='utf-8') as f:
+        dati = json.load(f)
+    for nome in ['dati.json'] + ['media/' + m for m in dati.get('media', [])]:
+        scarica.append({
+            'step': 'writeFile',
+            'path': DEST + nome.replace('media/', ''),
+            'data': {'resource': 'url', 'url': PAGES + nome},
+        })
 
 blueprint = {
     '$schema': 'https://playground.wordpress.net/blueprint-schema.json',
@@ -37,6 +53,8 @@ blueprint = {
             },
             'options': {'activate': True, 'targetFolderName': 'valleydor-padel'},
         },
+        {'step': 'mkdir', 'path': DEST.rstrip('/')},
+    ] + scarica + [
         {'step': 'runPHP', 'code': prepara},
         {'step': 'login', 'username': 'gestore', 'password': 'demo'},
     ],
