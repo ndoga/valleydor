@@ -3,7 +3,7 @@ Theme Name: Valley d'Or Padel
 Theme URI: https://www.valleydor.it/
 Author: Valley d'Or
 Description: Tema su misura per il centro padel Valley d'Or di La Ciaccia – Valledoria. Home a pagina unica animata con prezzi, corsi, galleria, sponsor e mappa. Testi, prezzi e foto si modificano da Aspetto › Personalizza › Valley d'Or.
-Version: 1.2.2
+Version: 1.2.3
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GNU General Public License v2 or later
@@ -1077,3 +1077,141 @@ h3 { font-size: 1.35rem; font-weight: 700; }
 .acc__amount { white-space: nowrap; text-align: right; }
 .acc__amount b { font-family: var(--font-head); font-size: 1.15rem; }
 .acc__prices li.is-sale .acc__amount b { color: #c62f33; }
+
+/* ==========================================================
+   Apertura: "PADEL" sotto il nome e pulsante in evidenza
+   ========================================================== */
+
+/* Come nel logo: la parola sotto il nome, verde e spaziata, centrata sotto il nome */
+.hero__title { display: flex; flex-direction: column; align-items: flex-start; }
+.hero__brand { display: inline-flex; flex-direction: column; align-items: center; }
+.hero__brand .hero__name { align-self: stretch; }
+.hero__padel {
+  display: block;
+  margin: -.02em 0 0;
+  padding-left: .42em; /* compensa lo spazio dopo l'ultima lettera: resta centrata */
+  font-size: clamp(1.3rem, 4vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: .42em;
+  color: var(--lime);
+  opacity: 0;
+  animation: padelIn 1.1s .95s var(--ease) forwards;
+}
+@keyframes padelIn {
+  from { opacity: 0; letter-spacing: 1.1em; filter: blur(6px); }
+  to { opacity: 1; letter-spacing: .42em; filter: none; }
+}
+@media (max-width: 560px) {
+  .hero__brand { align-items: flex-start; } /* su due righe: sotto "D'OR", a sinistra */
+}
+.hero__padel + .hero__tag { margin-top: .5em; }
+
+/* Numeri del centro: ora sono tre */
+.stats { grid-template-columns: repeat(3, 1fr); }
+
+/* Pulsante in evidenza: un cartello che ogni tanto "trema", come quelli delle offerte */
+.promo {
+  position: absolute;
+  right: 20%;
+  bottom: 70px; /* poco sotto i pulsanti (l'area del testo ha 110px di margine in basso) */
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 52px 16px 18px; /* a destra lo spazio per la stella "Novità" */
+  border-radius: 18px;
+  background: var(--white);
+  color: var(--ink);
+  text-decoration: none;
+  box-shadow: 0 22px 44px -14px rgba(0, 0, 0, .6), 0 0 0 4px rgba(179, 218, 45, .35);
+  transform: rotate(-3deg);
+  transform-origin: 50% 100%;
+  opacity: 0;
+  animation: promoIn .8s 1.9s var(--ease) forwards, promoTrema 3.6s 3s ease-in-out infinite;
+}
+.promo:hover,
+.promo:focus-visible {
+  animation-play-state: paused, paused;
+  transform: rotate(0) translateY(-4px) scale(1.03);
+  box-shadow: 0 26px 50px -14px rgba(0, 0, 0, .65), 0 0 0 4px var(--lime);
+}
+@keyframes promoIn {
+  from { opacity: 0; transform: translateY(30px) rotate(-14deg) scale(.7); }
+  to { opacity: 1; transform: rotate(-3deg); }
+}
+@keyframes promoTrema {
+  0%, 76%, 100% { opacity: 1; transform: rotate(-3deg); }
+  80% { opacity: 1; transform: rotate(3deg) scale(1.05); }
+  84% { opacity: 1; transform: rotate(-7deg) scale(1.05); }
+  88% { opacity: 1; transform: rotate(4deg) scale(1.03); }
+  92% { opacity: 1; transform: rotate(-5deg); }
+  96% { opacity: 1; transform: rotate(-2deg); }
+}
+
+.promo__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--lime);
+}
+.promo__icon svg { width: 26px; height: 26px; fill: none; stroke: var(--ink); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.promo__txt { display: flex; flex-direction: column; line-height: 1.05; }
+.promo__txt strong {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-style: italic;
+  font-size: 1.45rem;
+  letter-spacing: .01em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.promo__txt small { margin-top: 4px; color: var(--muted); font-weight: 700; font-size: .82rem; }
+
+/* Targhetta a stella, come il bollino delle offerte */
+.promo__tag {
+  position: absolute;
+  top: -30px;
+  right: -26px;
+  display: grid;
+  place-items: center;
+  width: 70px;
+  height: 70px;
+  background: #ff3b3f;
+  clip-path: polygon(50% 0%, 59.1% 10%, 71.7% 5%, 75.6% 17.9%, 89.1% 18.8%, 86.9% 32.2%, 98.7% 38.9%, 91% 50%, 98.7% 61.1%, 86.9% 67.8%, 89.1% 81.2%, 75.6% 82.1%, 71.7% 95%, 59.1% 90%, 50% 100%, 40.9% 90%, 28.3% 95%, 24.4% 82.1%, 10.9% 81.2%, 13.1% 67.8%, 1.3% 61.1%, 9% 50%, 1.3% 38.9%, 13.1% 32.2%, 10.9% 18.8%, 24.4% 17.9%, 28.3% 5%, 40.9% 10%);
+  transform: rotate(12deg);
+  animation: bollino 1.8s ease-in-out infinite;
+}
+.promo__tag span {
+  color: var(--white);
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: .68rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+@keyframes bollino { 50% { transform: rotate(12deg) scale(1.1); } }
+
+@media (max-width: 1100px) {
+  .promo { right: 6%; }
+}
+@media (max-width: 860px) {
+  /* Su schermi stretti il cartello va subito sotto il titolo, nella prima schermata */
+  .hero__content { display: flex; flex-direction: column; align-items: flex-start; }
+  .hero__lead { order: 2; }
+  .hero .hero__actions { order: 3; width: 100%; }
+  .promo { order: 1; position: relative; right: auto; bottom: auto; margin: 4px 0 34px 6px; }
+}
+@media (max-width: 560px) {
+  .stats { grid-template-columns: repeat(3, 1fr); }
+  .stat { padding: 20px 12px; }
+  .stat strong { font-size: 2rem; }
+  .stat span { font-size: .82rem; line-height: 1.3; display: block; }
+  .promo { padding: 12px 44px 12px 12px; gap: 12px; }
+  .promo__icon { width: 40px; height: 40px; }
+  .promo__txt strong { font-size: 1.2rem; }
+  .promo__tag { width: 62px; height: 62px; top: -26px; right: -18px; }
+}

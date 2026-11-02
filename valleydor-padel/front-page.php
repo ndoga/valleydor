@@ -59,6 +59,7 @@ foreach ( $tariffe as $t ) {
 		<div class="hero__content wrap">
 			<p class="eyebrow hero__eyebrow"><span class="dot"></span> <?php echo esc_html( vd( 'hero_luogo' ) ); ?></p>
 			<h1 class="hero__title">
+				<span class="hero__brand">
 				<span class="hero__name">
 					<span class="sr-only"><?php echo esc_html( vd( 'hero_nome' ) ); ?></span>
 					<?php
@@ -79,6 +80,10 @@ foreach ( $tariffe as $t ) {
 					}
 					?>
 				</span>
+				<?php if ( vd( 'hero_sotto' ) ) : ?>
+					<span class="hero__padel"><?php echo esc_html( vd( 'hero_sotto' ) ); ?></span>
+				<?php endif; ?>
+				</span>
 				<span class="hero__tag"><span class="line"><span>Padel a <em>100 metri</em> dal mare.</span></span></span>
 			</h1>
 			<p class="hero__lead"><?php echo esc_html( vd( 'hero_testo' ) ); ?></p>
@@ -86,6 +91,28 @@ foreach ( $tariffe as $t ) {
 				<a href="<?php echo esc_url( $playtomic ); ?>" class="btn btn--lime btn--big" target="_blank" rel="noopener">Prenota il campo <?php echo $freccia; // phpcs:ignore -- SVG statico ?></a>
 				<a href="#prezzi" class="btn btn--ghost btn--big">Vedi i prezzi</a>
 			</div>
+
+			<?php if ( vd( 'promo_attiva' ) && vd( 'promo_testo' ) ) : ?>
+				<?php
+				// Pulsante in evidenza (es. "Clinic di padel"): senza link apre WhatsApp con un messaggio pronto.
+				$promo_link  = vd( 'promo_link' ) ? vd( 'promo_link' ) : $whatsapp . '?text=' . rawurlencode( 'Ciao, vorrei informazioni su: ' . vd( 'promo_testo' ) );
+				$promo_fuori = 0 !== strpos( $promo_link, '#' );
+				?>
+				<a href="<?php echo esc_url( $promo_link ); ?>" class="promo" <?php echo $promo_fuori ? 'target="_blank" rel="noopener"' : ''; ?>>
+					<?php if ( vd( 'promo_etichetta' ) ) : ?>
+						<span class="promo__tag"><span><?php echo esc_html( vd( 'promo_etichetta' ) ); ?></span></span>
+					<?php endif; ?>
+					<span class="promo__icon" aria-hidden="true">
+						<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M5.6 5.7c3.4 3.2 3.4 9.4 0 12.6M18.4 5.7c-3.4 3.2-3.4 9.4 0 12.6" /></svg>
+					</span>
+					<span class="promo__txt">
+						<strong><?php echo esc_html( vd( 'promo_testo' ) ); ?></strong>
+						<?php if ( vd( 'promo_sotto' ) ) : ?>
+							<small><?php echo esc_html( vd( 'promo_sotto' ) ); ?> →</small>
+						<?php endif; ?>
+					</span>
+				</a>
+			<?php endif; ?>
 		</div>
 
 		<div class="ball" aria-hidden="true"></div>
@@ -112,7 +139,6 @@ foreach ( $tariffe as $t ) {
 			<div class="stats">
 				<div class="stat reveal"><strong data-count="2">2</strong><span>campi panoramici</span></div>
 				<div class="stat reveal"><strong data-count="100" data-prefix="&lt;">&lt;100</strong><span>metri dal mare</span></div>
-				<div class="stat reveal"><strong data-count="3">3</strong><span>categorie di tornei</span></div>
 				<?php if ( null !== $persona_min ) : ?>
 					<div class="stat reveal"><strong <?php echo floor( $persona_min ) == $persona_min ? 'data-count="' . (int) $persona_min . '" data-suffix="€"' : ''; ?>><?php echo esc_html( vd_fmt( $persona_min ) ); ?>€</strong><span>a persona per giocare</span></div>
 				<?php else : ?>

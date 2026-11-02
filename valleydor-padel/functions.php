@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'VD_VERSION', '1.2.2' );
+define( 'VD_VERSION', '1.2.3' );
 
 require get_template_directory() . '/inc/listini.php';
 require get_template_directory() . '/inc/tornei.php';
@@ -69,6 +69,13 @@ function vd_defaults() {
 		'modulo'      => '',
 		// Apertura
 		'hero_nome'   => "Valley d'Or",
+		'hero_sotto'  => 'Padel',
+		// Pulsante in evidenza nell'apertura (gestito dal pannello)
+		'promo_attiva'    => '1',
+		'promo_testo'     => 'Clinic di padel',
+		'promo_etichetta' => 'Novità',
+		'promo_sotto'     => 'Scopri di più',
+		'promo_link'      => '',
 		'hero_luogo'  => 'La Ciaccia · Valledoria · Sardegna',
 		'hero_testo'  => "Due campi panoramici, istruttori federali e tornei tutto l'anno. Scegli l'orario, porta gli amici: al resto pensiamo noi.",
 		'hero_img'    => $img . 'notte-1.jpg',
@@ -326,6 +333,7 @@ add_action( 'customize_register', function ( $wp_customize ) {
 
 	// Apertura
 	$testo( 'hero_nome', 'vd_apertura', 'Nome in grande', 'text', "L'ultima parola viene evidenziata in verde." );
+	$testo( 'hero_sotto', 'vd_apertura', 'Parola sotto il nome', 'text', 'Come nel logo, es. "Padel". Vuoto = non compare.' );
 	$testo( 'hero_luogo', 'vd_apertura', 'Riga sopra il titolo' );
 	$testo( 'hero_testo', 'vd_apertura', 'Testo sotto il titolo', 'textarea' );
 	$foto( 'hero_img', 'vd_apertura', 'Foto di sfondo' );

@@ -56,6 +56,20 @@ add_action( 'admin_post_vd_salva', function () {
 		set_theme_mod( 'orari', sanitize_text_field( wp_unslash( $_POST['orari'] ) ) );
 	}
 
+	// Pulsante in evidenza nell'apertura del sito.
+	if ( isset( $_POST['vd_listini'] ) ) {
+		set_theme_mod( 'promo_attiva', empty( $_POST['promo_attiva'] ) ? '' : '1' );
+		foreach ( array( 'promo_testo', 'promo_etichetta', 'promo_sotto' ) as $key ) {
+			if ( isset( $_POST[ $key ] ) ) {
+				set_theme_mod( $key, sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) );
+			}
+		}
+		if ( isset( $_POST['promo_link'] ) ) {
+			$link = trim( wp_unslash( $_POST['promo_link'] ) ); // phpcs:ignore -- ripulito sotto
+			set_theme_mod( 'promo_link', 0 === strpos( $link, '#' ) ? '#' . sanitize_key( substr( $link, 1 ) ) : esc_url_raw( $link ) );
+		}
+	}
+
 	// Foto: solo immagini realmente presenti nella libreria media.
 	foreach ( array( 'galleria_ids', 'sponsor_ids' ) as $key ) {
 		if ( isset( $_POST[ $key ] ) ) {
@@ -292,6 +306,28 @@ function vd_pannello_pagina() {
 			<input type="hidden" name="action" value="vd_salva">
 			<input type="hidden" name="vd_listini" value="1">
 			<?php wp_nonce_field( 'vd_salva' ); ?>
+
+			<section class="vd-card">
+				<h2><span class="dashicons dashicons-megaphone"></span> Pulsante in evidenza</h2>
+				<p class="vd-help">Il cartello che "trema" nella prima schermata del sito, per lanciare una novità (un clinic, un evento, un'offerta).</p>
+				<div class="vd-row<?php echo vd( 'promo_attiva' ) ? ' is-star' : ' is-off'; ?> vd-row--promo">
+					<span class="vd-row__handle dashicons dashicons-megaphone" aria-hidden="true"></span>
+					<div class="vd-row__fields">
+						<?php vd_campo( 'promo_testo', 'Testo', vd( 'promo_testo' ), 'vd-f--nome', 'placeholder="es. Clinic di padel"' ); ?>
+						<?php vd_campo( 'promo_etichetta', 'Targhetta', vd( 'promo_etichetta' ), '', 'placeholder="es. Novità"' ); ?>
+						<?php vd_campo( 'promo_sotto', 'Testo piccolo', vd( 'promo_sotto' ), '', 'placeholder="es. Scopri di più"' ); ?>
+						<label class="vd-f vd-f--wide"><span>Link <small>(vuoto = apre WhatsApp con la richiesta di informazioni; si può mettere anche #corsi o #tornei)</small></span>
+							<input type="text" name="promo_link" value="<?php echo esc_attr( vd( 'promo_link' ) ); ?>" placeholder="https://… oppure #corsi">
+						</label>
+					</div>
+					<div class="vd-row__flags">
+						<label class="vd-toggle" title="Se spento, il pulsante non compare sul sito">
+							<input type="checkbox" class="vd-js-visibile" name="promo_attiva" value="1" <?php checked( (bool) vd( 'promo_attiva' ) ); ?>>
+							<span class="vd-toggle__ui" aria-hidden="true"></span> Visibile
+						</label>
+					</div>
+				</div>
+			</section>
 
 			<section class="vd-card">
 				<h2><span class="dashicons dashicons-tag"></span> Tariffe del campo</h2>

@@ -133,6 +133,11 @@
     $list.closest('form').trigger('change');
   });
 
+  // Pulsante in evidenza: grigio se spento.
+  $(document).on('change', '.vd-row--promo .vd-js-visibile', function () {
+    $(this).closest('.vd-row').toggleClass('is-off', !this.checked).toggleClass('is-star', this.checked);
+  });
+
   $(document).on('input change', '.vd-list .vd-row input, .vd-list .vd-row textarea', function () {
     aggiorna($(this).closest('.vd-row'));
   });
