@@ -29,7 +29,7 @@
   $$('a', nav).forEach(a => a.addEventListener('click', () => toggleMenu(false)));
 
   /* ---------- voce di menu attiva ---------- */
-  const links = $$('.nav a[href^="#"]');
+  const links = $$('.nav a[href^="#"]:not([data-finestra])'); // le voci che aprono una finestra non sono sezioni
   const sections = links.map(a => $(a.getAttribute('href')));
   const spy = new IntersectionObserver(entries => {
     entries.forEach(e => {
@@ -155,24 +155,34 @@
   if (year) year.textContent = new Date().getFullYear();
 
   /* ---------- finestra della novità (es. Padel Clinic) ---------- */
-  $$('[data-finestra]').forEach(btn => {
-    const dlg = document.getElementById(btn.dataset.finestra);
-    if (!dlg || typeof dlg.showModal !== 'function') return; // senza supporto resta il link normale
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
+  // Si apre dal cartello, dalla voce del menu, o arrivando da un'altra pagina con #clinic.
+  $$('dialog.clinic').forEach(dlg => {
+    if (typeof dlg.showModal !== 'function') return; // senza supporto restano i link normali
+    let origine = null;
+    const apri = (da) => {
+      origine = da || null;
       dlg.showModal();
       document.body.style.overflow = 'hidden';
       dlg.querySelector('.clinic__box').scrollTop = 0;
-    });
+    };
     const chiudi = () => {
       dlg.classList.add('is-closing');
       setTimeout(() => { dlg.classList.remove('is-closing'); dlg.close(); }, reduce ? 0 : 220);
     };
+    $$('[data-finestra="' + dlg.id + '"]').forEach(btn => btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      apri(btn);
+    }));
     $$('[data-chiudi]', dlg).forEach(b => b.addEventListener('click', chiudi));
     // clic sullo sfondo scuro, fuori dal riquadro
     dlg.addEventListener('click', (e) => { if (e.target === dlg) chiudi(); });
     dlg.addEventListener('cancel', (e) => { e.preventDefault(); chiudi(); });
-    dlg.addEventListener('close', () => { document.body.style.overflow = ''; btn.focus(); });
+    dlg.addEventListener('close', () => {
+      document.body.style.overflow = '';
+      if (origine && origine.offsetParent !== null) origine.focus();
+      if (location.hash === '#' + dlg.id) history.replaceState(null, '', location.pathname + location.search);
+    });
+    if (location.hash === '#' + dlg.id) setTimeout(() => apri(null), 400);
   });
 
   /* ---------- ciclo di scorrimento ---------- */

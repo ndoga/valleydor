@@ -3,7 +3,7 @@ Theme Name: Valley d'Or Padel
 Theme URI: https://www.valleydor.it/
 Author: Valley d'Or
 Description: Tema su misura per il centro padel Valley d'Or di La Ciaccia – Valledoria. Home a pagina unica animata con prezzi, corsi, galleria, sponsor e mappa. Testi, prezzi e foto si modificano da Aspetto › Personalizza › Valley d'Or.
-Version: 1.2.4
+Version: 1.2.5
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GNU General Public License v2 or later
@@ -1478,4 +1478,29 @@ h3 { font-size: 1.35rem; font-weight: 700; }
   .clinic__cta { width: 100%; flex-wrap: nowrap; gap: 8px; }
   .clinic__cta .btn { padding: .8em .9em; font-size: .82rem; white-space: nowrap; }
   .clinic__cta .btn--lime { flex: 1; }
+}
+
+/* Voce del menu per la novità (es. "Clinic"), con bollino */
+.nav a.nav__new,
+.footer__nav a.nav__new { display: inline-flex; align-items: center; gap: .45em; color: var(--lime); }
+.nav__bollino {
+  display: inline-block;
+  padding: .28em .6em .24em;
+  border-radius: 999px;
+  background: #ff3b3f;
+  color: var(--white);
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: .62em;
+  line-height: 1;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  transform: translateY(-.55em) rotate(-6deg);
+  animation: navBollino 1.8s ease-in-out infinite;
+}
+@keyframes navBollino { 50% { transform: translateY(-.55em) rotate(-6deg) scale(1.12); } }
+.nav a.nav__new::after { right: 0; }
+@media (max-width: 860px) {
+  .nav__bollino { font-size: .42em; transform: translateY(-.9em) rotate(-6deg); }
+  @keyframes navBollino { 50% { transform: translateY(-.9em) rotate(-6deg) scale(1.12); } }
 }

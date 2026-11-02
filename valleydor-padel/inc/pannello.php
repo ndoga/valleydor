@@ -59,7 +59,7 @@ add_action( 'admin_post_vd_salva', function () {
 	// Pulsante in evidenza nell'apertura del sito.
 	if ( isset( $_POST['vd_listini'] ) ) {
 		set_theme_mod( 'promo_attiva', empty( $_POST['promo_attiva'] ) ? '' : '1' );
-		foreach ( array( 'promo_testo', 'promo_etichetta', 'promo_sotto' ) as $key ) {
+		foreach ( array( 'promo_testo', 'promo_etichetta', 'promo_sotto', 'promo_menu' ) as $key ) {
 			if ( isset( $_POST[ $key ] ) ) {
 				set_theme_mod( $key, sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) );
 			}
@@ -335,6 +335,7 @@ function vd_pannello_pagina() {
 						<?php vd_campo( 'promo_testo', 'Testo', vd( 'promo_testo' ), 'vd-f--nome', 'placeholder="es. Clinic di padel"' ); ?>
 						<?php vd_campo( 'promo_etichetta', 'Targhetta', vd( 'promo_etichetta' ), '', 'placeholder="es. Novità"' ); ?>
 						<?php vd_campo( 'promo_sotto', 'Testo piccolo', vd( 'promo_sotto' ), '', 'placeholder="es. Scopri di più"' ); ?>
+						<?php vd_campo( 'promo_menu', 'Nome nel menu (vuoto = non compare)', vd( 'promo_menu' ), '', 'placeholder="es. Clinic"' ); ?>
 						<label class="vd-f vd-f--wide"><span>Link <small>(vuoto = apre WhatsApp con la richiesta di informazioni; si può mettere anche #corsi o #tornei)</small></span>
 							<input type="text" name="promo_link" value="<?php echo esc_attr( vd( 'promo_link' ) ); ?>" placeholder="https://… oppure #corsi">
 						</label>

@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'VD_VERSION', '1.2.4' );
+define( 'VD_VERSION', '1.2.5' );
 
 require get_template_directory() . '/inc/listini.php';
 require get_template_directory() . '/inc/tornei.php';
@@ -77,6 +77,7 @@ function vd_defaults() {
 		'promo_sotto'     => 'Scopri di più',
 		'promo_link'      => '',
 		'promo_finestra'  => '1', // al clic apre la finestra della Clinic invece del link
+		'promo_menu'      => 'Clinic', // voce nel menu (vuoto = non compare nel menu)
 		// Finestra "Padel Clinic"
 		'clinic_titolo'   => 'Padel Clinic',
 		'clinic_slogan'   => 'Vivi il padel, migliora il tuo gioco.',
@@ -228,6 +229,47 @@ function vd_ids( $csv ) {
 /** Collegamento a una sezione della home, valido da qualsiasi pagina. */
 function vd_anchor( $id ) {
 	return is_front_page() ? '#' . $id : home_url( '/#' . $id );
+}
+
+/**
+ * Voce del menu per la novità in evidenza (es. "Clinic"), o null se non va mostrata.
+ * Con la finestra attiva apre la finestra: nella home direttamente, dalle altre pagine
+ * porta alla home con #clinic e la finestra si apre all'arrivo (assets/js/main.js).
+ */
+function vd_promo_menu() {
+	if ( ! vd( 'promo_attiva' ) || ! vd( 'promo_testo' ) || ! vd( 'promo_menu' ) ) {
+		return null;
+	}
+	if ( vd( 'promo_finestra' ) ) {
+		$href  = is_front_page() ? '#clinic' : home_url( '/#clinic' );
+		$extra = ' data-finestra="clinic" aria-haspopup="dialog"';
+	} else {
+		$whatsapp = 'https://wa.me/' . preg_replace( '/\D/', '', vd( 'whatsapp' ) );
+		$href     = vd( 'promo_link' ) ? vd( 'promo_link' ) : $whatsapp . '?text=' . rawurlencode( 'Ciao, vorrei informazioni su: ' . vd( 'promo_testo' ) );
+		if ( 0 === strpos( $href, '#' ) && ! is_front_page() ) {
+			$href = home_url( '/' . $href );
+		}
+		$extra = 0 === strpos( $href, 'http' ) && false === strpos( $href, home_url() ) ? ' target="_blank" rel="noopener"' : '';
+	}
+	return array(
+		'href'      => $href,
+		'attr'      => $extra,
+		'testo'     => vd( 'promo_menu' ),
+		'etichetta' => vd( 'promo_etichetta' ),
+	);
+}
+
+/** Stampa la voce del menu per la novità (vedi vd_promo_menu()). */
+function vd_promo_menu_link( $classe = 'nav__new' ) {
+	$m = vd_promo_menu();
+	if ( ! $m ) {
+		return;
+	}
+	echo '<a href="' . esc_url( $m['href'] ) . '" class="' . esc_attr( $classe ) . '"' . $m['attr'] . '>' . esc_html( $m['testo'] ); // phpcs:ignore -- attributi fissi
+	if ( $m['etichetta'] ) {
+		echo ' <span class="nav__bollino">' . esc_html( $m['etichetta'] ) . '</span>';
+	}
+	echo '</a>';
 }
 
 /** Numero di telefono solo cifre, per i link tel:. */
